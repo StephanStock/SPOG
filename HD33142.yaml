@@ -1,0 +1,34 @@
+# Input file to define the parameters for the script.
+object_name : 'HD33142'  # Name of the object, must be a python string
+
+
+save_path : './' # Path were the results will be saved
+
+model_path : '/home/sstock/Documents/CMD_tracks/Kepler/Models_uncompressed_onlyBV.h5'  # Path to the hdf5 file
+
+
+mag_star : 7.96 # magnitude of star in certain band [mag]
+
+mag_star_err : 0.010 #uncertainty of magnitude in the band
+
+color_star : 0.953 #color of the star [mag]
+
+color_star_err : 0.013 #uncertainty of magnitude in the band
+
+met_star : 0.06 #metallicity [Fe/H] [dex]
+
+met_star_err : 0.01 #uncertainty of metallicity
+
+par_star : 8.2719 #parallax [mas]
+
+par_err_star : 0.0202 #uncertainty of parallax [mas]
+
+use_extinction : False  # Use extinction estimate
+
+A_lambda : 0.21                # extinction A_band
+
+E_color : 0.06                     # reddening in color bands
+
+parameterization: 'default2'      # default,default2, log, linear
+
+model_sampling: 10           # Default 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy
