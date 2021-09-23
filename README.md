@@ -1,2 +1,3 @@
-# STERN
-bayeSian sTellar paramEters foR giaNt stars
+# SPOG
+Stellar Parameters of Giants
+(Live long and Bayesian!)
