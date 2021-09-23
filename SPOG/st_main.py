@@ -18,7 +18,7 @@ import st_utils
 
 
 print(f' \n'
-      f'Welcome to STERN V{__version__}\n')
+      f'Welcome to SPOG V{__version__}\n')
 # Input the parameter set in the parameter file - the list of possible
 # arguments is defined in the default_params-dictionairy
 with open(str(sys.argv[1])) as stream:
@@ -37,6 +37,7 @@ default_params = {'object_name': '',
                   'met_star_err': 0.1,
                   'par_star': 2-45,
                   'par_err_star': 0.01,
+                  'par_err_dom': False,
                   'use_extinction': False,
                   'A_lambda': 0,
                   'E_color': 0,
@@ -51,14 +52,17 @@ for key in default_params:
         print(f'Parameter {key} is missing in the input file.\n'
               f'Value set to default: {key} = {default_params[key]}\n')
 
-# calculate ABL from parallax and magnitude (This parametrization is key to be less biased!!!) Assumes parallax error dominates photometric uncertainties!
+# calculate ABL from parallax and magnitude (This parametrization is key to be less biased!)
 if params['use_extinction'] == False:
     params['ABL_star'] = 10**(params['mag_star']*0.2+1)*(params['par_star']/1000.)
-    # the following uncertainty is a simplification and assumes that the influence
-    # on the ABL is dominated by the parallx uncertainty
-    params['ABL_star_err'] = 10**(params['mag_star']*0.2+1)*(params['par_err_star']/1000.)
-    # test = 10**(params['mag_star']*0.2+1)*(params['par_err_star']/1000.) + \
-    # params['mag_star_err']*0.00450517*params['par_star']*np.exp(0.460517*params['mag_star'])
+    # Assumes parallax error dominates photometric uncertainties!
+    if params['par_err_dom'] == True:
+        params['ABL_star_err'] = 10**(params['mag_star']*0.2+1)*(params['par_err_star']/1000.)
+    # Assumes magnitude uncertainty is not negligible! Slight bias due to non-linear transformation between magnitude and ABL
+    else:
+        params['ABL_star_err'] = 10**(params['mag_star']*0.2+1)*(params['par_err_star']/1000.) + \
+            params['mag_star_err']*4.460517*(params['par_star']/1000) * \
+            np.exp(0.460517*params['mag_star'])
 else:
     print('Applying extinction...')
     params['ABL_star'] = 10**((params['mag_star']-params['A_lambda'])
@@ -177,27 +181,24 @@ if __name__ == '__main__':
 
     print('All models loaded, starting calculations...')
 
-
-# if __name__ == '__main__':
     with ProcessPoolExecutor(2) as executor:
-        # these return immediately and are executed in parallel, on separate processes
         future_1 = executor.submit(st_calc.calc_prob, metlist_rgb, params)
         future_2 = executor.submit(st_calc.calc_prob, metlist_hb, params)
-    # get results / re-raise exceptions that were thrown in workers
+
     rgb_dataframe = future_1.result()
     hb_dataframe = future_2.result()
 
-    print(total)
-    print('Calculations finished, plotting cornerplot')
-    # with ProcessPoolExecutor(2) as executor:
-    #    future_1 = executor.submit(st_utils.cornerplot, rgb_dataframe, params, '_RGB')
-    #    future_2 = executor.submit(st_utils.cornerplot, hb_dataframe, params, '_HB')
-    if len(rgb_dataframe.index) > 0:
-        st_utils.plot_cornerplot(rgb_dataframe, params, '_RGB')
-    if len(hb_dataframe.index) > 0:
-        st_utils.plot_cornerplot(hb_dataframe, params, '_HB')
+    print('Calculations finished')
 
-    print('Cornerplots saved under path '+str(params['save_path']))
+    if params['plot_corner'] == True:
+        print('Creating cornerplot....')
+
+        if len(rgb_dataframe.index) > 0:
+            st_utils.plot_cornerplot(rgb_dataframe, params, '_RGB')
+        if len(hb_dataframe.index) > 0:
+            st_utils.plot_cornerplot(hb_dataframe, params, '_HB')
+
+        print('Cornerplot saved under path: '+str(params['save_path']))
 
     # calculate probability of HB or RGB evolutionary stage
     rgb_prob = rgb_dataframe['posterior_weight'].sum(
@@ -205,6 +206,7 @@ if __name__ == '__main__':
     hb_prob = hb_dataframe['posterior_weight'].sum(
     )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
 
-    print('Saving output file '+params['object_name']+'RGB.out under '+str(params['save_path']))
+    if params('return_ascii') == True:
+        print('Saving output file '+params['object_name']+'RGB.out under '+str(params['save_path']))
 
-print('finished')
+print('END')

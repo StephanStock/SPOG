@@ -31,24 +31,25 @@ def plot_cornerplot(df, params, sol_type):
 
     if params['parameterization'] == 'log':
         df['logM'] = np.log10(df['mass_act'])
-        df['logR'] = np.log10(df['Radius'])
         df['log_age'] = np.log10(df['age'])
-        figure = corner.corner(df[['logM', 'logR', 'logg_act', 'log_age', 'logL', 'logT']],
+        df['logRR'] = np.log((10**df['logR'])/Rsun)  # transform from logR in cgs to logR in Rsun
+        figure = corner.corner(df[['logM', 'logRR', 'logg_act', 'log_age', 'logL', 'logT']],
                                weights=df['posterior_weight'], quantiles=[0.16, 0.5, 0.84],
                                labels=[r'log($M [M_\odot])$', r'log($R [R_\odot])$', r'log($g[cm/s^2]$)', r'log($\tau$[yr])', r'log($L [L_\odot]$)', 'log(T[K])'], smooth=1.0, smooth1d=1.0, plot_contours=True, fill_contours=True,
                                plot_datapoints=False, show_titles=True)
-        figure.savefig(params['save_path']+params['object_name']+sol_type+'.pdf')
+        figure.savefig(params['save_path']+params['object_name']+sol_type+'_corner.pdf')
     elif params['parameterization'] == 'linear':
         df['g'] = 10**(df['logg_act'])
         df['L'] = 10**(df['logL'])
         df['T'] = 10**(df['logT'])
+        df['Radius'] = (10**df['logR'])/Rsun
         figure = corner.corner(df[['mass_act', 'Radius', 'g', 'age', 'L', 'T']],
                                weights=df['posterior_weight'], quantiles=[0.16, 0.5, 0.84],
                                labels=[r'Mass $[M_\odot]$', r'Radius $[R_\odot]$', r'$g[cm/s^2]$', r'$\tau$[yr]', r'$L [L_\odot]$', 'T[K]'], smooth=1.0, smooth1d=1.0, plot_contours=True, fill_contours=True,
                                plot_datapoints=False, show_titles=True)
-        figure.savefig(params['save_path']+params['object_name']+sol_type+'.pdf')
+        figure.savefig(params['save_path']+params['object_name']+sol_type+'_corner.pdf')
     elif params['parameterization'] == 'default2':
-        df['Radius'] = (10**df['Radius'])/Rsun
+        df['Radius'] = (10**df['logR'])/Rsun
         df['L'] = 10**(df['logL'])
         df['T'] = 10**(df['logT'])
         df['log_age'] = np.log10(df['age'])
@@ -57,17 +58,36 @@ def plot_cornerplot(df, params, sol_type):
                                weights=df['posterior_weight'], quantiles=[0.16, 0.5, 0.84],
                                labels=[r'Mass $[M_\odot]$', r'Mass loss $[M_\odot]$', r'Radius $[R_\odot]$', r'log($g[cm/s^2]$)', r'log($\tau$[yr])', r'$L [L_\odot]$', 'T[K]', 'Phase'], smooth=1.0, smooth1d=1.0, plot_contours=True, fill_contours=True,
                                plot_datapoints=False, show_titles=True)
-        figure.savefig(params['save_path']+params['object_name']+sol_type+'.pdf')
+        figure.savefig(params['save_path']+params['object_name']+sol_type+'_corner.pdf')
     else:
         df['log_age'] = np.log10(df['age'])
         df['mass_loss'] = pd.Series.abs(df['mass_ZAMS']-df['mass_act'])
-        df['Radius'] = (10**df['Radius'])/Rsun
+        df['Radius'] = (10**df['logR'])/Rsun
         figure = corner.corner(df[['mass_act', 'mass_loss', 'Radius', 'logg_act', 'log_age', 'logL', 'logT', 'phase']],
                                weights=df['posterior_weight'], quantiles=[0.16, 0.5, 0.84],
                                labels=[r'Mass $[M_\odot]$', r'Mass loss $[M_\odot]$', r'Radius $[R_\odot]$', r'log($g[cm/s^2]$)', r'log($\tau$[yr])', r'log($L [L_\odot]$)', 'log(T[K])', 'Phase'], smooth=1.0, smooth1d=1.0, plot_contours=True, fill_contours=True,
                                plot_datapoints=False, show_titles=True)
-        figure.savefig(params['save_path']+params['object_name']+sol_type+'.pdf')
+        figure.savefig(params['save_path']+params['object_name']+sol_type+'_corner.pdf')
 
 
-def write_outputfile(arg):
+def write_outputfile(df, params, sol_type):
+    if params['parameterization'] == 'log':
+        df['logM'] = np.log10(df['mass_act'])
+        df['log_age'] = np.log10(df['age'])
+        df['logRR'] = np.log((10**df['logR'])/Rsun)  # transform from logR in cgs to logR in Rsun
+    elif params['parameterization'] == 'linear':
+        df['g'] = 10**(df['logg_act'])
+        df['L'] = 10**(df['logL'])
+        df['T'] = 10**(df['logT'])
+        df['Radius'] = (10**df['logR'])/Rsun
+    elif params['parameterization'] == 'default2':
+        df['Radius'] = (10**df['logR'])/Rsun
+        df['L'] = 10**(df['logL'])
+        df['T'] = 10**(df['logT'])
+        df['log_age'] = np.log10(df['age'])
+    else:
+        df['log_age'] = np.log10(df['age'])
+        df['mass_loss'] = pd.Series.abs(df['mass_ZAMS']-df['mass_act'])
+        df['Radius'] = (10**df['logR'])/Rsun
+
     pass

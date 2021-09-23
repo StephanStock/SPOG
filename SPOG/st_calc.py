@@ -3,14 +3,13 @@ import numpy as np
 import pandas as pd
 import sys
 import time
-#import ray
+# import ray
 
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
 __version__ = "0.9"
 __license__ = "MIT"
 
 
-# @ray.remote
 def calc_prob(model_list, params):
     df_return = pd.DataFrame({})
     for m in range(len(model_list)):
@@ -28,6 +27,19 @@ def calc_prob(model_list, params):
 
 
 def get_mean_track(dataframe):
+    """Short summary.
+
+    Parameters
+    ----------
+    dataframe : type pd.DataFrame
+        Dataframe consisting of evolutionary track model points
+
+    Returns
+    -------
+    type pd.DataFrame
+        Dataframe consisting of evolutionary track sections based on mean values between evolutionary track model points
+
+    """
     dataframe = dataframe.reset_index(drop=True)
     df_dummy = dataframe.diff()[1:]
     evol_time = df_dummy['age']  # get evolutionary time of track section
