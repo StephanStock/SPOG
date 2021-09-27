@@ -33,8 +33,12 @@ E_color : 0.06                     # reddening in color bands
 
 parameterization: 'default2'      # default, default2, log, linear
 
-model_sampling: 5           # Default is 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy. Not recommended for final calculations
+model_sampling: 10           # Default is 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy. Not recommended for final calculations
 
-plot_corner: True #if True a corner plot will be saved
+plot_corner: True #if True saves a corner plot
 
-return_ascii: True # if True a ascii file will be returned (readable by Topcat)
+return_ascii: True # if True saves an ascii file (readable by Topcat)
+
+plot_posterior: True #if True saves a posterior plot (without cornerplot)
+
+save_posterior: True    #if True saves the complete posteriors into an hdf5 file, use pandas.read_hdf('filename.h5', 'key') where key is RGB or HB to reload the posterior into a Pandas dataframe

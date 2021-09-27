@@ -10,7 +10,7 @@ from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
-__version__ = "0.9"
+__version__ = "0.92"
 __license__ = "MIT"
 
 import st_calc
@@ -42,7 +42,11 @@ default_params = {'object_name': '',
                   'A_lambda': 0,
                   'E_color': 0,
                   'parameterization': 'default',
-                  'model_sampling': 1}
+                  'model_sampling': 1,
+                  'plot_corner': True,
+                  'return_ascii': True,
+                  'plot_posterior': True,
+                  'save_posterior': True}
 params = {}
 for key in default_params:
     try:
@@ -200,13 +204,27 @@ if __name__ == '__main__':
 
         print('Cornerplot saved under path: '+str(params['save_path']))
 
-    # calculate probability of HB or RGB evolutionary stage
+    # calculate probability under prior of each evolutionary stage
     rgb_prob = rgb_dataframe['posterior_weight'].sum(
     )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
     hb_prob = hb_dataframe['posterior_weight'].sum(
     )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
 
-    if params('return_ascii') == True:
+    if params['return_ascii'] == True:
         print('Saving output file '+params['object_name']+'RGB.out under '+str(params['save_path']))
+        if len(rgb_dataframe.index) > 0:
+            st_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
+        if len(hb_dataframe.index) > 0:
+            st_utils.write_outputfile(hb_dataframe, params, '_HB', hb_prob)
 
+    if params['plot_posterior'] == True:
+        print('Creating Posterior plot...')
+
+    if params['save_posterior'] == True:
+        print('Saving posteriors in hdf5 file ' +
+              params['object_name']+'_posteriors.h5 under path '+str(params['save_path']))
+        rgb_dataframe.to_hdf(params['save_path']+params['object_name'] +
+                             '_posteriors.h5', key='RGB', mode='w')
+        hb_dataframe.to_hdf(params['save_path']+params['object_name'] +
+                            '_posteriors.h5', key='HB')
 print('END')

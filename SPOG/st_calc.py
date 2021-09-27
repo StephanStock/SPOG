@@ -6,7 +6,7 @@ import time
 # import ray
 
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
-__version__ = "0.9"
+__version__ = "0.92"
 __license__ = "MIT"
 
 
