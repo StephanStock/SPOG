@@ -13,8 +13,9 @@ __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
 __version__ = "0.92"
 __license__ = "MIT"
 
-import st_calc
-import st_utils
+import sp_calc
+import sp_utils
+import sp_plots
 
 
 print(f' \n'
@@ -35,7 +36,7 @@ default_params = {'object_name': '',
                   'color_star_err': 0.036,
                   'met_star': 0,
                   'met_star_err': 0.1,
-                  'par_star': 2-45,
+                  'par_star': 2.45,
                   'par_err_star': 0.01,
                   'par_err_dom': False,
                   'use_extinction': False,
@@ -46,6 +47,9 @@ default_params = {'object_name': '',
                   'plot_corner': True,
                   'return_ascii': True,
                   'plot_posterior': True,
+                  'posterior_bins': 20,
+                  'posterior_fig_kwargs': {},
+                  'posterior_plot_kwargs': {},
                   'save_posterior': True}
 params = {}
 for key in default_params:
@@ -168,41 +172,41 @@ if __name__ == '__main__':
             mass_group_hb = hdf.get(model+'/hb')
             mass_group_hb_items = list(mass_group_hb.items())
 
-            metlist_rgb.append(st_utils.load_models(hdf, mass_group_lowmass_items,
+            metlist_rgb.append(sp_utils.load_models(hdf, mass_group_lowmass_items,
                                                     model, weight, params, 6., 10.999, 'lowmass'))
-            metlist_rgb.append(st_utils.load_models(hdf, mass_group_highmass_items,
+            metlist_rgb.append(sp_utils.load_models(hdf, mass_group_highmass_items,
                                                     model, weight, params, 6., 10.999, 'highmass'))
-            metlist_hb.append(st_utils.load_models(hdf, mass_group_hb_items,
+            metlist_hb.append(sp_utils.load_models(hdf, mass_group_hb_items,
                                                    model, weight, params, 1., 5., 'hb'))
-            metlist_hb.append(st_utils.load_models(hdf, mass_group_highmass_items,
+            metlist_hb.append(sp_utils.load_models(hdf, mass_group_highmass_items,
                                                    model, weight, params, 11., 14.999, 'highmass'))
 
         print('loaded models of metallicity: '+model)
 
     t1 = time.time()
     total = t1-t0
-    print('Time to load models was '+str(total)+'s')
+    print('Time to load models was '+str(round(total, 2))+' s \n')
 
-    print('All models loaded, starting calculations...')
+    print('All necessary models loaded, starting calculations...\n')
 
     with ProcessPoolExecutor(2) as executor:
-        future_1 = executor.submit(st_calc.calc_prob, metlist_rgb, params)
-        future_2 = executor.submit(st_calc.calc_prob, metlist_hb, params)
+        future_1 = executor.submit(sp_calc.calc_prob, metlist_rgb, params)
+        future_2 = executor.submit(sp_calc.calc_prob, metlist_hb, params)
 
     rgb_dataframe = future_1.result()
     hb_dataframe = future_2.result()
 
-    print('Calculations finished')
+    print('Calculations finished \n')
 
     if params['plot_corner'] == True:
-        print('Creating cornerplot....')
+        print('Creating cornerplot...\n')
 
         if len(rgb_dataframe.index) > 0:
-            st_utils.plot_cornerplot(rgb_dataframe, params, '_RGB')
+            sp_plots.plot_cornerplot(rgb_dataframe, params, '_RGB')
         if len(hb_dataframe.index) > 0:
-            st_utils.plot_cornerplot(hb_dataframe, params, '_HB')
+            sp_plots.plot_cornerplot(hb_dataframe, params, '_HB')
 
-        print('Cornerplot saved under path: '+str(params['save_path']))
+        print('Cornerplots saved under path: '+str(params['save_path'])+'\n')
 
     # calculate probability under prior of each evolutionary stage
     rgb_prob = rgb_dataframe['posterior_weight'].sum(
@@ -211,18 +215,24 @@ if __name__ == '__main__':
     )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
 
     if params['return_ascii'] == True:
-        print('Saving output file '+params['object_name']+'RGB.out under '+str(params['save_path']))
+        print('Saving output file '+params['object_name'] +
+              'RGB.out under '+str(params['save_path'])+'\n')
         if len(rgb_dataframe.index) > 0:
-            st_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
+            sp_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
         if len(hb_dataframe.index) > 0:
-            st_utils.write_outputfile(hb_dataframe, params, '_HB', hb_prob)
+            sp_utils.write_outputfile(hb_dataframe, params, '_HB', hb_prob)
 
     if params['plot_posterior'] == True:
-        print('Creating Posterior plot...')
+        print('Creating Posterior plot...\n')
+        if len(rgb_dataframe.index) > 0:
+            sp_plots.plot_posterior(rgb_dataframe, params, '_RGB')
+        if len(hb_dataframe.index) > 0:
+            sp_plots.plot_posterior(hb_dataframe, params, '_HB')
+        print('Posterior plots saved under path: '+str(params['save_path'])+'\n')
 
     if params['save_posterior'] == True:
         print('Saving posteriors in hdf5 file ' +
-              params['object_name']+'_posteriors.h5 under path '+str(params['save_path']))
+              params['object_name']+'_posteriors.h5 under path '+str(params['save_path'])+'\n')
         rgb_dataframe.to_hdf(params['save_path']+params['object_name'] +
                              '_posteriors.h5', key='RGB', mode='w')
         hb_dataframe.to_hdf(params['save_path']+params['object_name'] +

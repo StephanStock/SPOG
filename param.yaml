@@ -1,11 +1,9 @@
 # Input file to define the parameters for the script.
 object_name : 'Test_1p95msun'  # Name of the object, must be a python string, outputfiles will begin witht this name
 
-
 save_path : '/home/sstock/Seafile/GJ251/stellar_param/' # Path were the results will be saved
 
 model_path : '/media/sstock/Seagate Expansion Drive/Project_SPOG/Models_uncompressed_BV_new.h5'  # Path to the hdf5 file
-
 
 mag_star : 7.18264 # magnitude of star in certain band [mag]
 
@@ -41,4 +39,10 @@ return_ascii: True # if True saves an ascii file (readable by Topcat)
 
 plot_posterior: True #if True saves a posterior plot (without cornerplot)
 
-save_posterior: True    #if True saves the complete posteriors into an hdf5 file, use pandas.read_hdf('filename.h5', 'key') where key is RGB or HB to reload the posterior into a Pandas dataframe
+posterior_bins: -1 #send the bin argument to astropy.stats.histogram (can be float or sting), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1)
+
+posterior_fig_kwargs: {} #kwargs to sent to matplotlib.pyplot.subplot to influence the figure style, set empty {} for default
+
+posterior_plot_kwargs: {} #kwargs to sent to matplotlib.pyplot.plot() to influence the plotting style, set empty {} for default
+
+save_posterior: True    #if True saves all posterior results into a single hdf5 file, use pandas.read_hdf('filename.h5', 'key') where key is RGB or HB to reload the posterior into a Pandas dataframe

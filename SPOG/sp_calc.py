@@ -26,12 +26,12 @@ def calc_prob(model_list, params):
 # order to derive the evolutionary time along the track
 
 
-def get_mean_track(dataframe):
+def get_mean_track(df):
     """Short summary.
 
     Parameters
     ----------
-    dataframe : type pd.DataFrame
+    df : type pd.DataFrame
         Dataframe consisting of evolutionary track model points
 
     Returns
@@ -40,12 +40,12 @@ def get_mean_track(dataframe):
         Dataframe consisting of evolutionary track sections based on mean values between evolutionary track model points
 
     """
-    dataframe = dataframe.reset_index(drop=True)
-    df_dummy = dataframe.diff()[1:]
+    df = df.reset_index(drop=True)
+    df_dummy = df.diff()[1:]
     evol_time = df_dummy['age']  # get evolutionary time of track section
     evol_time_reset = evol_time.reset_index(drop=True)
     df_dummy_reset = df_dummy.reset_index(drop=True)
-    df_dummy2 = dataframe[:len(dataframe)-1]
+    df_dummy2 = df[:len(df)-1]
     df_dummy3 = df_dummy_reset.add(df_dummy2, fill_value=0)
     df_final = df_dummy2.add(df_dummy3, fill_value=0)/2.
     df_final['evol_weight'] = evol_time_reset  # required for timescale prior
@@ -55,5 +55,10 @@ def get_mean_track(dataframe):
 # Salpeter IMF as prior
 
 
-def IMF_prior(dataframe):
-    return dataframe['mass_ZAMS']**-2.35
+def IMF_prior(df):
+    return df['mass_ZAMS']**-2.35
+
+
+def opt_bin(df, weight, maxbin):
+    print('WARNING: Automated binning not yet implemented, setting bins to 20')
+    return 20
