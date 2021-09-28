@@ -89,7 +89,7 @@ save_posterior: True    #if True saves all posterior samples into a single hdf5 
 
 
 ## Citation
-If you are using *SPOG* for your research *please cite our paper* **[Stock et al. (2017)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)** and link this github repository. Please also acknolege the packages required for *SPOG* as well as the stellar models by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract).
+If you are using *SPOG* for your research *please cite our paper* **[Stock et al. (2017)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)** and link this github repository.
 The BibTeX entry is:
 ```
 @ARTICLE{2018A&A...616A..33S,
@@ -111,4 +111,4 @@ archivePrefix = {arXiv},
 }
 
 ```
-Please make sure to also acknowledge the python packages required for *SPOG* as well as the stellar evolutionary models by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract). 
+Please make sure to also acknowledge the python packages required for *SPOG* as well as the stellar evolutionary models by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract).
