@@ -1,7 +1,7 @@
 # *SPOG* (Stellar Parameters of Giants)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-*SPOG* is a Python script for uncomplicated determination of stellar parameters based on the method outlined in [Stock et al. (2017)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). This code provides publication quality plots, ascii parameter files readable by [*Topcat*](http://www.star.bris.ac.uk/~mbt/topcat/) and complete posterior samples can be saved in the form of HDF5 files.
+*SPOG* is a Python script for uncomplicated determination of stellar parameters based on the original unpublished IDL code used and outlined in [Stock et al. (2017)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The code uses Bayesian inference and provides publication quality plots, ascii parameter files readable by [*Topcat*](http://www.star.bris.ac.uk/~mbt/topcat/) and complete weighted posterior samples can be saved in the form of HDF5 files for direct analysis on the probability density functions of the derived stelar parameters.
 
 ## Installation
 ### From source (Only supported variant currently)
@@ -19,12 +19,13 @@ git clone https://github.com/StephanStock/SPOG.git
 * yaml
 * pandas
 * corner
+* h5py
 
 
 ### Stellar Evolutionary Tracks
-The code uses the stellar models based on the PAdova and TRieste Stellar Evolution  Code [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) available under http://stev.oapd.inaf.it/cgi-bin/cmd .
+The code uses the stellar models based on the PAdova and TRieste Stellar Evolution  Code [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) available under [this link](https://people.sissa.it/~sbressan/parsec.html).
 
-However, the models require a particular preparation and certain modifications which are explained in detail in [Stock et al. (2017)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The prepared models will be available here shortly, for the moment you can contact me privately to receive them.
+However, the models require a particular preparation and certain modifications which are explained in more detail in [Stock et al. (2017)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The prepared models will be available here shortly, for the moment you can contact me privately to receive them.
 
 ### Testing the installation
 To test the functionality of *SPOG* after installing the program and the models go to the directory in which sp_main.py has been copied and run:
