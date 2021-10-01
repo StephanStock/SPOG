@@ -33,14 +33,10 @@ default_params = {'object_name': '',
                   'photometric_band_A': 'mag',
                   'photometric_band_B': 'color',
                   'reverse': False,
-                  'mag_star': 9,
-                  'mag_star_err': 0.1,
-                  'color_star': 0.97,
-                  'color_star_err': 0.036,
-                  'met_star': 0,
-                  'met_star_err': 0.1,
-                  'par_star': 2.45,
-                  'par_err_star': 0.01,
+                  'mag_star': [9, 0.1],
+                  'color_star': [0.97, 0.14],
+                  'met_star': [0, 0.1],
+                  'par_star': [2.45, 0.01],
                   'par_err_dom': False,
                   'use_extinction': False,
                   'A_lambda': 0,
@@ -65,24 +61,29 @@ for key in default_params:
 
 # calculate ABL from parallax and magnitude (This parametrization is key to be less biased!)
 if params['use_extinction'] == False:
-    params['ABL_star'] = 10**(params['mag_star']*0.2+1)*(params['par_star']/1000.)
+    params['ABL_star'] = 10**(params['mag_star'][0]*0.2+1)*(params['par_star'][0]/1000.)
     # Assumes parallax error dominates photometric uncertainties!
     if params['par_err_dom'] == True:
-        params['ABL_star_err'] = 10**(params['mag_star']*0.2+1)*(params['par_err_star']/1000.)
+        params['ABL_star_err'] = 10**(params['mag_star'][0]*0.2+1)*(params['par_star'][1]/1000.)
     # Assumes magnitude uncertainty is not negligible! Slight bias due to non-linear transformation between magnitude and ABL
     else:
-        params['ABL_star_err'] = 10**(params['mag_star']*0.2+1)*(params['par_err_star']/1000.) + \
-            params['mag_star_err']*4.460517*(params['par_star']/1000) * \
-            np.exp(0.460517*params['mag_star'])
+        params['ABL_star_err'] = 10**(params['mag_star'][0]*0.2+1)*(params['par_star'][1]/1000.) + \
+            params['mag_star'][1]*4.460517*(params['par_star'][0]/1000) * \
+            np.exp(0.460517*params['mag_star'][0])
 else:
-    print('Applying extinction...')
-    params['ABL_star'] = 10**((params['mag_star']-params['A_lambda'])
-                              * 0.2+1)*(params['par_star']/1000.)
-    params['ABL_star_err'] = 10**(params['mag_star']*0.2+1)*(params['par_err_star']/1000.)
-    #params['color_star_err'] = np.sqrt(params['color_star']**2+params['E_color']**2)
-    params['color_star'] = params['color_star']-params['E_color']
+    print('Applying extinction and reddening...')
+    params['ABL_star'] = 10**((params['mag_star'][0]-params['A_lambda'][0])
+                              * 0.2+1)*(params['par_star'][0]/1000.)
+    if params['par_err_dom'] == True:
+        params['ABL_star_err'] = 10**(params['mag_star'][0]*0.2+1)*(params['par_star'][1]/1000.)
+    else:
+        params['ABL_star_err'] = 10**(params['mag_star'][0]*0.2+1)*(params['par_star'][1]/1000.) + \
+            np.sqrt(params['mag_star'][1]**2+params['A_lambda'][1]**2)*4.460517*(params['par_star'][0]/1000) * \
+            np.exp(0.460517*params['mag_star'][0])
+    params['color_star'][0] = params['color_star'][0]-params['E_color'][0]
+    params['color_star'][1] = np.sqrt(params['color_star'][1]**2+params['E_color'][1]**2)
 
-# load hdf5 file for metallicity list
+    # load hdf5 file for metallicity list
 with h5py.File(params['model_path'], 'r') as hdf:
     metallicities = list(hdf.keys())
 
@@ -147,8 +148,8 @@ df_all_met_sort['weight'] = np.asarray(met_weights)
 # Now load models for parameter estimation of the star (only 5 sigma range of measured metallicity!)
 
 
-maxfeh = params['met_star']+5*params['met_star_err']
-minfeh = params['met_star']-5*params['met_star_err']
+maxfeh = params['met_star'][0]+5*params['met_star'][1]
+minfeh = params['met_star'][0]-5*params['met_star'][1]
 
 metallicities_to_load = df_all_met_sort.loc[(
     df_all_met_sort['Fe/H'] >= minfeh) & (df_all_met_sort['Fe/H'] <= maxfeh)]['folder']
@@ -234,7 +235,7 @@ if __name__ == '__main__':
         print('Posterior plots saved under path: '+str(params['save_path'])+'\n')
 
     if params['save_posterior'] == True:
-        print('Saving posteriors in hdf5 file ' +
+        print('Saving posterior samples in hdf5 file ' +
               params['object_name']+'_posteriors.h5 under path '+str(params['save_path'])+'\n')
         rgb_dataframe.to_hdf(params['save_path']+params['object_name'] +
                              '_posteriors.h5', key='RGB', mode='w')

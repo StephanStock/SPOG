@@ -26,8 +26,8 @@ def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
         df['met_weight'] = weight
         # use only 5 sigma range of color and ABL around star
         # (faster calculation and less ram use)
-        df_load = df.loc[(df['phase'] >= phase_low) & (df['phase'] <= phase_up) & (df['color'] <= params['color_star']+5*params['color_star_err']) & (df['color'] >=
-                                                                                                                                                      params['color_star']-5*params['color_star_err']) & (df['ABL'] >= params['ABL_star']-5*params['ABL_star_err']) & (df['ABL'] <= params['ABL_star']+5*params['ABL_star_err'])]
+        df_load = df.loc[(df['phase'] >= phase_low) & (df['phase'] <= phase_up) & (df['color'] <= params['color_star'][0]+5*params['color_star'][1]) & (df['color'] >=
+                                                                                                                                                        params['color_star'][0]-5*params['color_star'][0]) & (df['ABL'] >= params['ABL_star']-5*params['ABL_star_err']) & (df['ABL'] <= params['ABL_star']+5*params['ABL_star_err'])]
         list.append(df_load)
     return list
 
@@ -43,7 +43,7 @@ def write_outputfile(df, params, sol_type, probability):
             result_list.extend(corner.quantile(
                 df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
         result_list.extend([probability])
-        np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 18)),
+        np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
                    header='log_Mass_q16_[log_Msun] log_Mass_q50_[log_Msun] log_Mass_q84_[log_Msun] log_Radius_q16_[log_Rsun] log_Radius_q50_[log_Rsun] log_Radius_q84_[log_Rsun] logg_q16_[cgs] logg_q50_[cgs] logg_q84_[cgs] log_Age_q16_[log_yr] log_Age_q50_[log_yr] log_Age_q84_[log_yr] log_Luminosity_q16_[log_Lsun] log_Luminosity_q50_[log_Lsun] log_Luminosity_q84_[log_Lsun] log_Temperature_q16_[log_K] log_Temperature_q50_[log_K] log_Temperature_q84_[log_K] Probability'+sol_type)
 
     elif params['parameterization'] == 'linear':
@@ -57,7 +57,7 @@ def write_outputfile(df, params, sol_type, probability):
             result_list.extend(corner.quantile(
                 df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
         result_list.extend([probability])
-        np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 18)),
+        np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
                    header='Mass_q16_[Msun] Mass_q50_[Msun] Mass_q84_[Msun] Radius_q16_[Rsun] Radius_q50_[Rsun] Radius_q84_[Rsun] SurfaceGravity_q16_[cgs] SurfaceGravity_q50_[cgs] SurfaceGravity_q84_[cgs] Age_q16_[yr] Age_q50_[yr] Age_q84_[yr] Luminosity_q16_[Lsun] Luminosity_q50_[Lsun] Luminosity_q84_[Lsun] Temperature_q16_[K] Temperature_q50_[K] Temperature_q84_[K] Probability'+sol_type)
 
     elif params['parameterization'] == 'default2':
@@ -86,7 +86,7 @@ def write_outputfile(df, params, sol_type, probability):
             result_list.extend(corner.quantile(
                 df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
         result_list.extend([probability])
-        np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 18)),
+        np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
                    header='Mass_q16_[Msun] Mass_q50_[Msun] Mass_q84_[Msun] Radius_q16_[Rsun] Radius_q50_[Rsun] Radius_q84_[Rsun] logg_q16_[cgs] logg_q50_[cgs] logg_q84_[cgs] log_Age_q16_[log_yr] log_Age_q50_[log_yr] log_Age_q84_[log_yr] Luminosity_q16_[Lsun] Luminosity_q50_[Lsun] Luminosity_q84_[Lsun] Temperature_q16_[K] Temperature_q50_[K] Temperature_q84_[K] Probability'+sol_type)
 
     pass
