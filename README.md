@@ -72,7 +72,7 @@ E_color : [0.06,0.02]          # [reddening in color, uncertainty] in mag
 
 parameterization: 'default'      # parametrization of derived paramers: default, default2 (as default but includes phase and mass loss), log, linear
 
-mode: 'classic'  # 'new': final parameters and uncertainties are sample quartiles [0.16, 0.5, 0.84] of weighted posterior (robust way and independent of binning!). 'classic': final parameters and uncertainties are weighted posterior modes (derived by spine interpolation) and uncertainty is calculated as in Stock et al. (2017). This method may depend slightly on binning. This mode is only available in default parametrization.
+mode: 'new'  # 'new': final parameters and uncertainties are sample quartiles [0.16, 0.5, 0.84] of weighted posterior (recommended and robust way as it is independent of binning!). 'classic': final parameters and uncertainties are weighted posterior modes (derived by spline interpolation) and uncertainties are calculated as in Eq. 11&12 of Stock et al., A&A 616, A33 (2018). This method may depend slightly on binning. This mode is only available in default parametrization.
 
 smooth: 1.0 #Default should be 1. Posteriors are smoothed using a gaussian filter. This parameters sets the standard deviation for the Gaussian kernel. In classic mode it may effect the derived posterior modes.
 
