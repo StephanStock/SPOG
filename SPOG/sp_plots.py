@@ -13,6 +13,8 @@ __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
 __version__ = "0.92"
 __license__ = "MIT"
 
+global_list_uncertainty = []
+
 
 def plot_cornerplot(df, params, sol_type):
     # define solar radius (cgs)
@@ -53,10 +55,16 @@ def plot_cornerplot(df, params, sol_type):
         df['L'] = 10**(df['logL'])
         df['T'] = 10**(df['logT'])
         df['log_age'] = np.log10(df['age'])
-        figure = corner.corner(df[['mass_act', 'Radius', 'logg_act', 'log_age', 'L', 'T']],
-                               weights=df['posterior_weight'], quantiles=[0.16, 0.5, 0.84],
-                               labels=[r'M $[M_\odot]$', r'R $[R_\odot]$', r'log($g[cm/s^2]$)', r'log($\tau$[yr])', r'$L [L_\odot]$', 'T[K]'], smooth=1.0, smooth1d=1.0, plot_contours=True, fill_contours=True,
-                               plot_datapoints=False, show_titles=True)
+        if params['mode'] == 'classic':
+            figure = corner.corner(df[['mass_act', 'Radius', 'logg_act', 'log_age', 'L', 'T']],
+                                   weights=df['posterior_weight'],
+                                   labels=[r'M $[M_\odot]$', r'R $[R_\odot]$', r'log($g[cm/s^2]$)', r'log($\tau$[yr])', r'$L [L_\odot]$', 'T[K]'], smooth=1.0, smooth1d=1.0, plot_contours=True, fill_contours=True,
+                                   plot_datapoints=False, show_titles=False)
+        else:
+            figure = corner.corner(df[['mass_act', 'Radius', 'logg_act', 'log_age', 'L', 'T']],
+                                   weights=df['posterior_weight'], quantiles=[0.16, 0.5, 0.84],
+                                   labels=[r'M $[M_\odot]$', r'R $[R_\odot]$', r'log($g[cm/s^2]$)', r'log($\tau$[yr])', r'$L [L_\odot]$', 'T[K]'], smooth=1.0, smooth1d=1.0, plot_contours=True, fill_contours=True,
+                                   plot_datapoints=False, show_titles=True)
         figure.savefig(params['save_path']+params['object_name']+sol_type+'_corner.pdf')
 
 
@@ -88,7 +96,7 @@ def plot_posterior(df, params, sol_type):
                 params['posterior_bins'] = sp_calc.opt_bin(dataframe, df['posterior_weight'], 50.)
             n, b = astropy.stats.histogram(
                 dataframe, bins=params['posterior_bins'], weights=df['posterior_weight'])
-            n = gaussian_filter(n, 1.0)
+            n = gaussian_filter(n, params['smooth'])
             x0 = np.array(list(zip(b[:-1], b[1:]))).flatten()
             y0 = np.array(list(zip(n, n))).flatten()
             y0 = y0/(np.max(y0))  # normalize maximum to 1
@@ -134,7 +142,7 @@ def plot_posterior(df, params, sol_type):
                 params['posterior_bins'] = sp_calc.opt_bin(dataframe, df['posterior_weight'], 50.)
             n, b = astropy.stats.histogram(
                 dataframe, bins=params['posterior_bins'], weights=df['posterior_weight'])
-            n = gaussian_filter(n, 1.0)
+            n = gaussian_filter(n, params['smooth'])
             x0 = np.array(list(zip(b[:-1], b[1:]))).flatten()
             y0 = np.array(list(zip(n, n))).flatten()
             y0 = y0/(np.max(y0))  # normalize maximum to 1
@@ -175,11 +183,14 @@ def plot_posterior(df, params, sol_type):
                 params['posterior_bins'] = sp_calc.opt_bin(dataframe, df['posterior_weight'], 50.)
             n, b = astropy.stats.histogram(
                 dataframe, bins=params['posterior_bins'], weights=df['posterior_weight'])
-            n = gaussian_filter(n, 1.0)
+
+            n = gaussian_filter(n, params['smooth'])
+
             x0 = np.array(list(zip(b[:-1], b[1:]))).flatten()
             y0 = np.array(list(zip(n, n))).flatten()
             y0 = y0/(np.max(y0))  # normalize maximum to 1
             ax.plot(x0, y0, **params['posterior_plot_kwargs'])
+
             ax.set_xlabel(label, fontsize=12)
 
             q_16, q_50, q_84 = corner.quantile(dataframe, [0.16, 0.5, 0.84],
@@ -216,23 +227,42 @@ def plot_posterior(df, params, sol_type):
                 params['posterior_bins'] = sp_calc.opt_bin(dataframe, df['posterior_weight'], 50.)
             n, b = astropy.stats.histogram(
                 dataframe, bins=params['posterior_bins'], weights=df['posterior_weight'])
-            n = gaussian_filter(n, 1.0)
+            n = gaussian_filter(n, params['smooth'])
             x0 = np.array(list(zip(b[:-1], b[1:]))).flatten()
             y0 = np.array(list(zip(n, n))).flatten()
             y0 = y0/(np.max(y0))  # normalize maximum to 1
             ax.plot(x0, y0, **params['posterior_plot_kwargs'])
             ax.set_xlabel(label, fontsize=12)
+            if params['mode'] == 'classic':
+                x_new, y_new = sp_calc.spline(b, n)
+                mode, e_low, e_high = sp_calc.get_mode_uncertainty(x_new, y_new)
+                ax.plot(x_new, y_new, color='red')
 
-            q_16, q_50, q_84 = corner.quantile(dataframe, [0.16, 0.5, 0.84],
-                                               weights=df['posterior_weight'])
-            q_m, q_p = q_50-q_16, q_84-q_50
-            for q in [q_16, q_50, q_84]:
-                ax.axvline(q, ls="dashed", color='black')
-            ax.set_title(str(label)+' = ${{{' +
-                         str(format(round(q_50, 2), '.2f'))+'}}}_{{-{'+str(format(round(q_m, 2), '.2f'))+'}}}^{{+{'+str(format(round(q_p, 2), '.2f'))+'}}}$', fontsize=12)
-            ax.set_ylim(bottom=0., top=1.04)
-            ax.set_xlim(left=dataframe.min(), right=dataframe.max())
+                ax.set_ylim(bottom=0., top=1.04)
+                ax.set_xlim(left=x_new.min(), right=x_new.max())
+                for q in [e_low, mode, e_high]:
+                    ax.axvline(q, ls="dashed", color='black')
+                global_list_uncertainty.extend([e_low, mode, e_high])
+                e_m, e_p = mode-e_low, e_high-mode
+                ax.set_title(str(label)+' = ${{{' +
+                             str(format(round(mode, 2), '.2f'))+'}}}_{{-{'+str(format(round(e_m, 2), '.2f'))+'}}}^{{+{'+str(format(round(e_p, 2), '.2f'))+'}}}$', fontsize=12)
+
+            else:
+                q_16, q_50, q_84 = corner.quantile(dataframe, [0.16, 0.5, 0.84],
+                                                   weights=df['posterior_weight'])
+                q_m, q_p = q_50-q_16, q_84-q_50
+                for q in [q_16, q_50, q_84]:
+                    ax.axvline(q, ls="dashed", color='black')
+
+                ax.set_title(str(label)+' = ${{{' +
+                             str(format(round(q_50, 2), '.2f'))+'}}}_{{-{'+str(format(round(q_m, 2), '.2f'))+'}}}^{{+{'+str(format(round(q_p, 2), '.2f'))+'}}}$', fontsize=12)
+                ax.set_ylim(bottom=0., top=1.04)
+                ax.set_xlim(left=dataframe.min(), right=dataframe.max())
 
         plt.tight_layout()
         figure.savefig(params['save_path']+params['object_name']+sol_type+'_posterior.pdf')
     pass
+
+
+def get_global_list_uncertainty():
+    return global_list_uncertainty

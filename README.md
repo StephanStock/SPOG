@@ -38,53 +38,59 @@ Proceed through the program.
 
 ```yaml
 # Input file to define the parameters for the script.
+
+#Essential parameters
 object_name : 'Test_1p95msun'  # Name of the object, must be a python string, outputfiles will begin witht this name
 
 save_path : '/home/sstock/Seafile/GJ251/stellar_param/' # Path were the results will be saved
 
-model_path : '/media/sstock/Seagate Expansion Drive/Project_SPOG/Models_uncompressed_BV_new.h5'  # Path to the HDF5 file of the models
+model_path : '/media/sstock/Seagate Expansion Drive/Project_SPOG/Models_uncompressed_BV_new.h5'  # Path to the hdf5 file of the evolutionary models
 
-mag_star : 7.18264 # magnitude of star in certain band [mag]
+photometric_band_A: 'mag' #photometric band that defines the ordinate
 
-mag_star_err : 0.010 #uncertainty of magnitude in the band
+photometric_band_B: 'color' #secondary photometric band
 
-color_star : 0.8788 #color of the star [mag]
+reverse: False   # if True: color equals photometric_band_A-photometric_band_B ; if False color equals photometric_band_B-photometric_band_A
 
-color_star_err : 0.013 #uncertainty of magnitude in the band
+mag_star : [7.18264, 0.010] # [magnitude of star, uncertainty] magnitude of star in photometric_band_A [mag]
 
-met_star : 0.05979 #metallicity [Fe/H] [dex]
+color_star : [0.8788, 0.013] #[color of star, uncertainty] color in star [mag]
 
-met_star_err : 0.01 #uncertainty of metallicity
+met_star : [0.05979, 0.01] #[metallicity, uncertainty] in Fe/H [dex]
 
-par_star : 8.2719 #parallax [mas]
+par_star : [8.2719, 0.02] #[parallax, uncertainty] in [mas]
 
-par_err_star : 0.02 #uncertainty of parallax [mas]
+#Optional Parameters
 
 par_err_dom : False #If the parallax error is assumed to dominate the uncertainty set to TRUE, if False slight BIAS is introduced since magnitude uncertainty is non-linear with respect to ABL
 
-use_extinction : False  # Use extinction estimate
+use_extinction : True  # Use extinction estimate
 
-A_lambda : 0.21                # extinction A_band
+A_lambda : [0.21,0.1]      # [extinction A in photometric_band_A, uncertainty] in mag
 
-E_color : 0.06                     # reddening in color bands
+E_color : [0.06,0.02]          # [reddening in color, uncertainty] in mag
 
-parameterization: 'default2'      # default, default2, log, linear
+parameterization: 'default'      # parametrization of derived paramers: default, default2 (as default but includes phase and mass loss), log, linear
+
+mode: 'classic'  # 'new': final parameters and uncertainties are sample quartiles [0.16, 0.5, 0.84] of weighted posterior (robust way and independent of binning!). 'classic': final parameters and uncertainties are weighted posterior modes (derived by spine interpolation) and uncertainty is calculated as in Stock et al. (2017). This method may depend slightly on binning. This mode is only available in default parametrization.
+
+smooth: 1.0 #Default should be 1. Posteriors are smoothed using a gaussian filter. This parameters sets the standard deviation for the Gaussian kernel. In classic mode it may effect the derived posterior modes.
 
 model_sampling: 1           # Default is 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy. Not recommended for final calculations
 
 plot_corner: True #if True saves a corner plot
 
-return_ascii: True # if True saves an ascii file (readable by Topcat) including the weigted mean and quantiles
+return_ascii: True # if True saves an ascii file (readable by Topcat)
 
 plot_posterior: True #if True saves a posterior plot (without cornerplot)
 
-posterior_bins: -1 #send the bin argument to astropy.stats.histogram (can be float or sting), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1)
+posterior_bins: 20 #send the bin argument to astropy.stats.histogram (can be float or sting), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1). Important note: The number of bins dos not affect the results but only influences the visualised posterior plots!
 
 posterior_fig_kwargs: {} #kwargs to sent to matplotlib.pyplot.subplot to influence the figure style, set empty {} for default
 
 posterior_plot_kwargs: {} #kwargs to sent to matplotlib.pyplot.plot() to influence the plotting style, set empty {} for default
 
-save_posterior: True    #if True saves all posterior samples into a single hdf5 file, use pandas.read_hdf('filename.h5', 'key') where key is RGB or HB to reload the posterior into a Pandas dataframe
+save_posterior: True    #if True saves all posterior results into a single hdf5 file, use pandas.read_hdf('filename.h5', 'key') where key is RGB or HB to reload the posterior into a Pandas dataframe
 ```
 
 

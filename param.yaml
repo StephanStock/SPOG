@@ -31,7 +31,11 @@ A_lambda : [0.21,0.1]      # [extinction A in photometric_band_A, uncertainty] i
 
 E_color : [0.06,0.02]          # [reddening in color, uncertainty] in mag
 
-parameterization: 'linear'      # parametrization of derived paramers: default, default2 (as default but includes phase and mass loss), log, linear
+parameterization: 'default'      # parametrization of derived paramers: default, default2 (as default but includes phase and mass loss), log, linear
+
+mode: 'classic'  # 'new': final parameters and uncertainties are sample quartiles [0.16, 0.5, 0.84] of weighted posterior (robust way and independent of binning!). 'classic': final parameters and uncertainties are weighted posterior modes (derived by spine interpolation) and uncertainty is calculated as in Stock et al. (2017). This method may depend slightly on binning. This mode is only available in default parametrization. 
+
+smooth: 1.0 #Default should be 1. Posteriors are smoothed using a gaussian filter. This parameters sets the standard deviation for the Gaussian kernel. In classic mode it may effect the derived posterior modes.
 
 model_sampling: 1           # Default is 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy. Not recommended for final calculations
 

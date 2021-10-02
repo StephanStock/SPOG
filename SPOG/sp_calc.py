@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import sys
 import time
+from scipy.interpolate import splev, splrep
+from scipy.integrate import newton_cotes
 # import ray
 
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
@@ -138,3 +140,67 @@ def get_bin(x, xmin, D_i):
 
     """
     return np.floor(((x-xmin)/D_i)-1e-10)
+
+
+def spline(x, y):
+    dummy = pd.DataFrame({'x': x})
+    dummy2 = dummy+(dummy.diff()[1:].reset_index(drop=True)/2)
+    x2 = dummy2[0:len(dummy2)-1].values
+    x2 = np.insert(x2, 0, x2.min()-(x2[1]-x2[0]))
+    x2 = np.insert(x2, len(x2), x2.max()+(x2[1]-x2[0]))
+    y = np.insert(y, 0, 0)
+    y = np.insert(y, len(y), 0)
+    step = (np.max(x2)-np.min(x2))/1000
+    x_new = np.arange(np.min(x2), np.max(x2), step)
+    spl = splrep(x2, y)
+    y_new = splev(x_new, spl)
+    y_new = y_new/np.max(y_new)
+    return x_new, y_new
+
+
+def get_mode_uncertainty(x, y):
+    dummy = pd.DataFrame({'x': x, 'y': y})
+    mode = dummy['x'][dummy['y'].idxmax()]
+    area = idl_tabulate(x, y)
+    before_mode = dummy['y'][0:dummy['y'].idxmax()].index
+    after_mode = dummy['y'][dummy['y'].idxmax():len(dummy['y'])].index
+
+    for n in range(99, 0, -1):
+        low = find_neighbours(n/100, dummy['y'][before_mode])
+        high = find_neighbours(n/100, dummy['y'][after_mode])
+        intarea = idl_tabulate(dummy['x'][low[1]:high[1]].values, dummy['y'][low[1]:high[1]])/area
+        if intarea > 0.6827:
+            e_low = dummy['x'][low[1]]
+            e_high = dummy['x'][high[1]]
+            break
+        if n == 1:
+            print('Warning: Could not derive any uncertainty!')
+            e_low = -99.
+            e_high = -99.
+            break
+    return mode, e_low, e_high
+
+
+def idl_tabulate(x, y, p=5):
+    area = 0
+    for idx in range(0, x.shape[0], p - 1):
+        area += newton_cotes_user(x[idx:idx + p], y[idx:idx + p])
+    return area
+
+
+def newton_cotes_user(x, y):
+    if x.shape[0] < 2:
+        return 0
+    rn = (x.shape[0] - 1) * (x - x[0]) / (x[-1] - x[0])
+    weights = newton_cotes(rn)[0]
+    return (x[-1] - x[0]) / (x.shape[0] - 1) * np.dot(weights, y)
+
+
+def find_neighbours(value, df):
+    exactmatch = df[df == value]
+    if not exactmatch.empty:
+        return exactmatch.index
+    else:
+        lowerneighbour_ind = df[df < value].idxmax()
+        upperneighbour_ind = df[df > value].idxmin()
+        return [lowerneighbour_ind, upperneighbour_ind]

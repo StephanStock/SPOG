@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import h5py
 import corner
+import sp_plots
+
 Rsun = 6.957e10
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
 __version__ = "0.92"
@@ -82,11 +84,18 @@ def write_outputfile(df, params, sol_type, probability):
         df['T'] = 10**(df['logT'])
         result_list = []
         parameters = ['mass_act', 'Radius', 'logg_act', 'log_age', 'L', 'T']
-        for i in parameters:
-            result_list.extend(corner.quantile(
-                df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
-        result_list.extend([probability])
-        np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
-                   header='Mass_q16_[Msun] Mass_q50_[Msun] Mass_q84_[Msun] Radius_q16_[Rsun] Radius_q50_[Rsun] Radius_q84_[Rsun] logg_q16_[cgs] logg_q50_[cgs] logg_q84_[cgs] log_Age_q16_[log_yr] log_Age_q50_[log_yr] log_Age_q84_[log_yr] Luminosity_q16_[Lsun] Luminosity_q50_[Lsun] Luminosity_q84_[Lsun] Temperature_q16_[K] Temperature_q50_[K] Temperature_q84_[K] Probability'+sol_type)
+        if params['mode'] == 'classic':
+            result_list = sp_plots.get_global_list_uncertainty()
+            result_list.extend([probability])
+            np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
+                       header='Mass_neg_[Msun] Mass_mode_[Msun] Mass_pos_[Msun] Radius_neg_[Rsun] Radius_mode_[Rsun] Radius_pos_[Rsun] logg_neg_[cgs] logg_mode_[cgs] logg_pos_[cgs] log_Age_neg_[log_yr] log_Age_mode_[log_yr] log_Age_pos_[log_yr] Luminosity_neg_[Lsun] Luminosity_mode_[Lsun] Luminosity_pos_[Lsun] Temperature_neg_[K] Temperature_mode_[K] Temperature_pos_[K] Probability'+sol_type)
+
+        else:
+            for i in parameters:
+                result_list.extend(corner.quantile(
+                    df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
+            result_list.extend([probability])
+            np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
+                       header='Mass_q16_[Msun] Mass_q50_[Msun] Mass_q84_[Msun] Radius_q16_[Rsun] Radius_q50_[Rsun] Radius_q84_[Rsun] logg_q16_[cgs] logg_q50_[cgs] logg_q84_[cgs] log_Age_q16_[log_yr] log_Age_q50_[log_yr] log_Age_q84_[log_yr] Luminosity_q16_[Lsun] Luminosity_q50_[Lsun] Luminosity_q84_[Lsun] Temperature_q16_[K] Temperature_q50_[K] Temperature_q84_[K] Probability'+sol_type)
 
     pass

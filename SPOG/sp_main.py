@@ -41,7 +41,9 @@ default_params = {'object_name': '',
                   'use_extinction': False,
                   'A_lambda': 0,
                   'E_color': 0,
-                  'parameterization': 'default',
+                  'parameterization': 'default2',
+                  'mode': 'new',
+                  'smooth': 1.0,
                   'model_sampling': 1,
                   'plot_corner': True,
                   'return_ascii': True,
@@ -58,6 +60,12 @@ for key in default_params:
         params[key] = default_params[key]
         print(f'Parameter {key} is missing in the input file.\n'
               f'Value set to default: {key} = {default_params[key]}\n')
+
+
+if params['mode'] == 'classic':  # if classic mode is used... posterior has to be plotted
+    params['plot_posterior'] = True
+    params['parameterization'] = 'default'
+    print('Warning: You have chosen the classic mode. This requires to plot the posterior and to use the default parametrization! Setting "plot_posterior": True and "parametrization": default')
 
 # calculate ABL from parallax and magnitude (This parametrization is key to be less biased!)
 if params['use_extinction'] == False:
@@ -218,14 +226,6 @@ if __name__ == '__main__':
     hb_prob = hb_dataframe['posterior_weight'].sum(
     )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
 
-    if params['return_ascii'] == True:
-        print('Saving output file '+params['object_name'] +
-              'RGB.out under '+str(params['save_path'])+'\n')
-        if len(rgb_dataframe.index) > 0:
-            sp_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
-        if len(hb_dataframe.index) > 0:
-            sp_utils.write_outputfile(hb_dataframe, params, '_HB', hb_prob)
-
     if params['plot_posterior'] == True:
         print('Creating Posterior plot...\n')
         if len(rgb_dataframe.index) > 0:
@@ -233,6 +233,14 @@ if __name__ == '__main__':
         if len(hb_dataframe.index) > 0:
             sp_plots.plot_posterior(hb_dataframe, params, '_HB')
         print('Posterior plots saved under path: '+str(params['save_path'])+'\n')
+
+    if params['return_ascii'] == True:
+        print('Saving output file '+params['object_name'] +
+              'RGB.out under '+str(params['save_path'])+'\n')
+        if len(rgb_dataframe.index) > 0:
+            sp_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
+        if len(hb_dataframe.index) > 0:
+            sp_utils.write_outputfile(hb_dataframe, params, '_HB', hb_prob)
 
     if params['save_posterior'] == True:
         print('Saving posterior samples in hdf5 file ' +
