@@ -25,7 +25,7 @@ git clone https://github.com/StephanStock/SPOG.git
 ### Stellar Evolutionary Tracks
 The code uses the stellar models based on the PAdova and TRieste Stellar Evolution  Code [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) available under [this link](https://people.sissa.it/~sbressan/parsec.html).
 
-However, the models require a particular preparation and certain modifications which are explained in more detail in Chapter 3 of [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The prepared models will be available here shortly, for the moment you can contact me privately to receive them.
+However, the models require a particular preparation and certain modifications which are explained in more detail in Chapter 3 of [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The prepared models can be downloaded from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/). Currently only sub-giant, red-giant and horizontal branch models are included and only B and V photometry are supported. New prepared models will be available soon allowing to also fit the main-sequence and pre-main sequence as well as to use other photometric bands (Gaia, 2Mass and Tycho VT and BT). 
 
 ### Testing the installation
 To test the functionality of *SPOG* after installing the program and the models go to the directory in which sp_main.py has been copied and run:
