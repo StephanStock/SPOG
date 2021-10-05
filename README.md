@@ -84,7 +84,7 @@ return_ascii: True # if True saves an ascii file (readable by Topcat)
 
 plot_posterior: True #if True saves a posterior plot (without cornerplot)
 
-posterior_bins: 20 #send the bin argument to astropy.stats.histogram (can be float or sting), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1). Important note: The number of bins dos not affect the results but only influences the visualised posterior plots!
+posterior_bins: 20 #send the bin argument to astropy.stats.histogram (can be float or string), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1). Important note: The number of bins dos not affect the results of the new mode but only influences the visualised posterior plots, for the classic mode this may play a more important role!
 
 posterior_fig_kwargs: {} #kwargs to sent to matplotlib.pyplot.subplot to influence the figure style, set empty {} for default
 
