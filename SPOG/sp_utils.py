@@ -6,7 +6,7 @@ import sp_plots
 
 Rsun = 6.957e10
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
-__version__ = "0.92"
+__version__ = "1.0"
 __license__ = "MIT"
 
 
@@ -20,9 +20,9 @@ def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
         df = pd.DataFrame(dataset, columns=attrs.split())
         df['mag'] = df[params['photometric_band_A']]
         if params['reverse'] == True:
-            df['color'] = df[params['photometric_band_B']]  # for the moment
+            df['color'] = df[params['photometric_band_A']]-df[params['photometric_band_B']]
         else:
-            df['color'] = df[params['photometric_band_B']]
+            df['color'] = df[params['photometric_band_B']]-df[params['photometric_band_A']]
 
         df['ABL'] = 10**(0.2*df['mag'])
         df['met_weight'] = weight

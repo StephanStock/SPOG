@@ -46,9 +46,9 @@ save_path : '/home/sstock/Seafile/GJ251/stellar_param/' # Path were the results 
 
 model_path : '/media/sstock/Seagate Expansion Drive/Project_SPOG/Models_uncompressed_BV_new.h5'  # Path to the hdf5 file of the evolutionary models
 
-photometric_band_A: 'mag' #photometric band that defines the ordinate (not supported yet, for the moment leave 'mag' which is V)
+photometric_band_A: 'V_johnson' #photometric band that defines the ordinate, currently supported kewords are V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia
 
-photometric_band_B: 'color' #secondary photometric band (not supported yet, for the moment leave 'color' which equals B)
+photometric_band_B: 'B_johnson' #secondary photometric band, currently supported kewords are V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia
 
 reverse: False   # if True: color equals photometric_band_A-photometric_band_B ; if False color equals photometric_band_B-photometric_band_A
 
@@ -84,13 +84,14 @@ return_ascii: True # if True saves an ascii file (readable by Topcat)
 
 plot_posterior: True #if True saves a posterior plot (without cornerplot)
 
-posterior_bins: 20 #send the bin argument to astropy.stats.histogram (can be float or string), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1). Important note: The number of bins dos not affect the results of the new mode but only influences the visualised posterior plots, for the classic mode this may play a more important role!
+posterior_bins: 20 #send the bin argument to astropy.stats.histogram (can be float or sting), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1). Important note: The number of bins does not affect the results but only influences the visualised posterior plots!
 
 posterior_fig_kwargs: {} #kwargs to sent to matplotlib.pyplot.subplot to influence the figure style, set empty {} for default
 
 posterior_plot_kwargs: {} #kwargs to sent to matplotlib.pyplot.plot() to influence the plotting style, set empty {} for default
 
 save_posterior: True    #if True saves all posterior results into a single hdf5 file, use pandas.read_hdf('filename.h5', 'key') where key is RGB or HB to reload the posterior into a Pandas dataframe
+
 ```
 
 

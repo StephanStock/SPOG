@@ -10,7 +10,7 @@ except ImportError:
     gaussian_filter = None
 Rsun = 6.957e10
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
-__version__ = "0.92"
+__version__ = "1.0"
 __license__ = "MIT"
 
 global_list_uncertainty = []

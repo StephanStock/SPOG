@@ -10,7 +10,7 @@ from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
-__version__ = "0.92"
+__version__ = "1.0"
 __license__ = "MIT"
 
 import sp_calc
@@ -30,8 +30,8 @@ with open(str(sys.argv[1])) as stream:
 default_params = {'object_name': '',
                   'save_path': './',
                   'model_path': [],
-                  'photometric_band_A': 'mag',
-                  'photometric_band_B': 'color',
+                  'photometric_band_A': 'V_johnson',
+                  'photometric_band_B': 'B_johnson',
                   'reverse': False,
                   'mag_star': [9, 0.1],
                   'color_star': [0.97, 0.14],
@@ -166,7 +166,6 @@ weights_of_metallicities = df_all_met_sort.loc[(
 
 weights_of_metallicities = weights_of_metallicities/len(weights_of_metallicities)
 
-
 if __name__ == '__main__':
     metlist_rgb = []
     metlist_hb = []
@@ -183,7 +182,6 @@ if __name__ == '__main__':
 
             mass_group_hb = hdf.get(model+'/hb')
             mass_group_hb_items = list(mass_group_hb.items())
-
             metlist_rgb.append(sp_utils.load_models(hdf, mass_group_lowmass_items,
                                                     model, weight, params, 6., 10.999, 'lowmass'))
             metlist_rgb.append(sp_utils.load_models(hdf, mass_group_highmass_items,
