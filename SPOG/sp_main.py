@@ -182,6 +182,7 @@ if __name__ == '__main__':
 
             mass_group_hb = hdf.get(model+'/hb')
             mass_group_hb_items = list(mass_group_hb.items())
+
             metlist_rgb.append(sp_utils.load_models(hdf, mass_group_lowmass_items,
                                                     model, weight, params, 6., 10.999, 'lowmass'))
             metlist_rgb.append(sp_utils.load_models(hdf, mass_group_highmass_items,

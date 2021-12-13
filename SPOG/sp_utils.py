@@ -12,22 +12,21 @@ __license__ = "MIT"
 
 def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
     list = []
-    # breakpoint()
     for i in range(len(group)):
         dataset = hdf[model+'/'+string+'/'+str(group[i][0])][()]
         attrs = hdf[model+'/'+string+'/' +
                     str(group[i][0])].attrs['header']
         df = pd.DataFrame(dataset, columns=attrs.split())
-        df['mag'] = df[params['photometric_band_A']]
         if params['reverse'] == True:
             df['color'] = df[params['photometric_band_A']]-df[params['photometric_band_B']]
         else:
             df['color'] = df[params['photometric_band_B']]-df[params['photometric_band_A']]
 
-        df['ABL'] = 10**(0.2*df['mag'])
+        df['ABL'] = 10**(0.2*df[params['photometric_band_A']])
         df['met_weight'] = weight
         # use only 5 sigma range of color and ABL around star
         # (faster calculation and less ram use)
+
         df_load = df.loc[(df['phase'] >= phase_low) & (df['phase'] <= phase_up) & (df['color'] <= params['color_star'][0]+5*params['color_star'][1]) & (df['color'] >=
                                                                                                                                                         params['color_star'][0]-5*params['color_star'][0]) & (df['ABL'] >= params['ABL_star']-5*params['ABL_star_err']) & (df['ABL'] <= params['ABL_star']+5*params['ABL_star_err'])]
         list.append(df_load)
