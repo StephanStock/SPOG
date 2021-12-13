@@ -6,8 +6,6 @@ import sp_calc
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('PDF')
-
-
 try:
     from scipy.ndimage import gaussian_filter
 except ImportError:
@@ -166,6 +164,11 @@ def plot_posterior(df, params, sol_type):
         figure.savefig(params['save_path']+params['object_name']+sol_type+'_posterior.pdf')
 
     elif params['parameterization'] == 'default2':
+        df['Radius'] = (10**df['logR'])/Rsun
+        df['L'] = 10**(df['logL'])
+        df['T'] = 10**(df['logT'])
+        df['log_age'] = np.log10(df['age'])
+        df['mass_loss'] = pd.Series.abs(df['mass_ZAMS']-df['mass_act'])
         if params['posterior_fig_kwargs'] == {}:
             params['posterior_fig_kwargs'] = {'figsize': (6, 12)}
         if params['posterior_plot_kwargs'] == {}:
@@ -210,6 +213,10 @@ def plot_posterior(df, params, sol_type):
         plt.tight_layout()
         figure.savefig(params['save_path']+params['object_name']+sol_type+'_posterior.pdf')
     else:
+        df['Radius'] = (10**df['logR'])/Rsun
+        df['L'] = 10**(df['logL'])
+        df['T'] = 10**(df['logT'])
+        df['log_age'] = np.log10(df['age'])
         if params['posterior_fig_kwargs'] == {}:
             params['posterior_fig_kwargs'] = {'figsize': (6, 9)}
         if params['posterior_plot_kwargs'] == {}:
@@ -222,6 +229,7 @@ def plot_posterior(df, params, sol_type):
             3, 2, **params['posterior_fig_kwargs'])
 
         axes = [ax1, ax2, ax3, ax4, ax5, ax6]
+        breakpoint()
         df_list = [df['mass_act'], df['Radius'], df['logg_act'], df['log_age'],
                    df['L'], df['T']]
         labels = [r'Mass $[M_\odot]$',  r'Radius $[R_\odot]$',
