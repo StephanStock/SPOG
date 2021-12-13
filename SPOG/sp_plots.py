@@ -1,9 +1,13 @@
-import numpy as np
-import pandas as pd
 import corner
-import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 import astropy.stats
 import sp_calc
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('PDF')
+
+
 try:
     from scipy.ndimage import gaussian_filter
 except ImportError:
