@@ -229,7 +229,6 @@ def plot_posterior(df, params, sol_type):
             3, 2, **params['posterior_fig_kwargs'])
 
         axes = [ax1, ax2, ax3, ax4, ax5, ax6]
-        breakpoint()
         df_list = [df['mass_act'], df['Radius'], df['logg_act'], df['log_age'],
                    df['L'], df['T']]
         labels = [r'Mass $[M_\odot]$',  r'Radius $[R_\odot]$',

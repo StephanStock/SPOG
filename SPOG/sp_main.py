@@ -208,36 +208,40 @@ if __name__ == '__main__':
 
     print('Calculations finished \n')
 
-    if params['plot_corner'] == True:
-        print('Creating cornerplot...\n')
-
-        if len(rgb_dataframe.index) > 0:
-            sp_plots.plot_cornerplot(rgb_dataframe, params, '_RGB')
-        if len(hb_dataframe.index) > 0:
-            sp_plots.plot_cornerplot(hb_dataframe, params, '_HB')
-
-        print('Cornerplots saved under path: '+str(params['save_path'])+'\n')
-
     # calculate probability under prior of each evolutionary stage
     rgb_prob = rgb_dataframe['posterior_weight'].sum(
     )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
     hb_prob = hb_dataframe['posterior_weight'].sum(
     )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
 
+    if hb_prob < 0.005:
+        print('Warning: Horizontal branch solution below 0.5% probability. No output will be created for this solution type!')
+    if rgb_prob < 0.005:
+        print('Warning: Red giant brach solution below 0.5% probability. No output will be created for this solution type!')
+    if params['plot_corner'] == True:
+        print('Creating cornerplot...\n')
+
+        if len(rgb_dataframe.index) > 0 and rgb_prob > 0.005:
+            sp_plots.plot_cornerplot(rgb_dataframe, params, '_RGB')
+        if len(hb_dataframe.index) > 0 and hb_prob > 0.005:
+            sp_plots.plot_cornerplot(hb_dataframe, params, '_HB')
+
+        print('Cornerplots saved under path: '+str(params['save_path'])+'\n')
+
     if params['plot_posterior'] == True:
         print('Creating Posterior plot...\n')
-        if len(rgb_dataframe.index) > 0:
+        if len(rgb_dataframe.index) > 0 and rgb_prob > 0.005:
             sp_plots.plot_posterior(rgb_dataframe, params, '_RGB')
-        if len(hb_dataframe.index) > 0:
+        if len(hb_dataframe.index) > 0 and hb_prob > 0.005:
             sp_plots.plot_posterior(hb_dataframe, params, '_HB')
         print('Posterior plots saved under path: '+str(params['save_path'])+'\n')
 
     if params['return_ascii'] == True:
         print('Saving output file '+params['object_name'] +
               'RGB.out under '+str(params['save_path'])+'\n')
-        if len(rgb_dataframe.index) > 0:
+        if len(rgb_dataframe.index) > 0 and rgb_prob > 0.005:
             sp_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
-        if len(hb_dataframe.index) > 0:
+        if len(hb_dataframe.index) > 0 and hb_prob > 0.005:
             sp_utils.write_outputfile(hb_dataframe, params, '_HB', hb_prob)
 
     if params['save_posterior'] == True:
