@@ -5,7 +5,7 @@ object_name : 'Test_1p95msun'  # Name of the object, must be a python string, ou
 
 save_path : '/home/sstock/Seafile/GJ251/stellar_param/' # Path were the results will be saved
 
-model_path : '/media/sstock/Seagate Expansion Drive/Project_SPOG/Models_uncompressed_BV_new.h5'  # Path to the hdf5 file of the evolutionary models
+model_path : '/media/sstock/Seagate Expansion Drive/Project_SPOG/Models.h5'  # Path to the hdf5 file of the evolutionary models
 
 photometric_band_A: 'V_johnson' #photometric band that defines the ordinate, currently supported kewords are V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia
 
@@ -23,21 +23,21 @@ par_star : [8.2719, 0.02] #[parallax, uncertainty] in [mas]
 
 #Optional Parameters
 
-par_err_dom : False #If the parallax error is assumed to dominate the uncertainty set to TRUE, if False slight BIAS is introduced since magnitude uncertainty is non-linear with respect to ABL
+par_err_dom : True #If the parallax error is assumed to dominate the uncertainty set to TRUE, if False slight BIAS is introduced since magnitude uncertainty is non-linear with respect to ABL
 
-use_extinction : True  # Use extinction estimate
+use_extinction : False  # Use extinction estimate
 
 A_lambda : [0.21,0.1]      # [extinction A in photometric_band_A, uncertainty] in mag
 
 E_color : [0.06,0.02]          # [reddening in color, uncertainty] in mag
 
-parameterization: 'default'      # parametrization of derived paramers: default, default2 (as default but includes phase and mass loss), log, linear
+parameterization: 'default'      # parametrization of derived parameters: default, default2 (as default but includes phase and mass loss), log, linear
 
 mode: 'new'  # 'new': final parameters and uncertainties are sample quartiles [0.16, 0.5, 0.84] of weighted posterior (recommended and robust way as it is independent of binning!). 'classic': final parameters and uncertainties are weighted posterior modes (derived by spline interpolation) and uncertainties are calculated as in Eq. 11&12 of Stock et al., A&A 616, A33 (2018). This method may depend slightly on binning. This mode is only available in default parametrization.
 
 smooth: 1.0 #Default should be 1. Posteriors are smoothed using a gaussian filter. This parameters sets the standard deviation for the Gaussian kernel. In classic mode it may effect the derived posterior modes.
 
-model_sampling: 1           # Default is 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy. Not recommended for final calculations
+model_sampling: 5           # Default is 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy. Not recommended for final calculations
 
 plot_corner: True #if True saves a corner plot
 
@@ -45,7 +45,7 @@ return_ascii: True # if True saves an ascii file (readable by Topcat)
 
 plot_posterior: True #if True saves a posterior plot (without cornerplot)
 
-posterior_bins: 20 #send the bin argument to astropy.stats.histogram (can be float or sting), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1). Important note: The number of bins does not affect the results but only influences the visualised posterior plots!
+posterior_bins: 20 #send the bin argument to astropy.stats.histogram (can be float or sting), if set to -1 the optimal number of bins will be calculated by using a self-implemented algorithm provided in Hogg (2008) (arkiv:0807.4820v1). Important note: The number of bins does not affect the results but only influences the visualised posterior plots for the mode new!
 
 posterior_fig_kwargs: {} #kwargs to sent to matplotlib.pyplot.subplot to influence the figure style, set empty {} for default
 

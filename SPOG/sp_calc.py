@@ -12,17 +12,13 @@ __version__ = "1.0"
 __license__ = "MIT"
 
 
-def calc_prob(model_list, params):
-    df_return = pd.DataFrame({})
-    for m in range(len(model_list)):
-        for n in range(len(model_list[m])):
-            df = get_mean_track(model_list[m][n])
-            df['IMF_weight'] = IMF_prior(df)
-            df['posterior_weight'] = np.exp(((params['ABL_star']-df['ABL'])**2/params['ABL_star_err']**2)-((params['color_star'][0]-df['color'])**2/params['color_star'][1]**2)-(
-                (params['met_star'][0]-df['[FE/H]'])**2/params['met_star'][1]**2))*df['met_weight']*df['IMF_weight']*df['evol_weight']
-            frames = [df_return, df]
-            df_return = pd.concat(frames)
-    return df_return
+def calc_prob(df_input, params):
+    df = get_mean_track(df_input)
+    df['IMF_weight'] = IMF_prior(df)
+    df['posterior_weight'] = np.exp(((params['ABL_star']-df['ABL'])**2/params['ABL_star_err']**2)-((params['color_star'][0]-df['color'])**2/params['color_star'][1]**2)-(
+        (params['met_star'][0]-df['[FE/H]'])**2/params['met_star'][1]**2))*df['met_weight']*df['IMF_weight']*df['evol_weight']
+
+    return df
 
 # get the mean value of section between evolutionary track points in
 # order to derive the evolutionary time along the track

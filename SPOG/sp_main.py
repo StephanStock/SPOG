@@ -199,14 +199,18 @@ if __name__ == '__main__':
 
     print('All necessary models loaded, starting calculations...\n')
 
+    t0 = time.time()
     with ProcessPoolExecutor(2) as executor:
-        future_1 = executor.submit(sp_calc.calc_prob, metlist_rgb, params)
-        future_2 = executor.submit(sp_calc.calc_prob, metlist_hb, params)
+        future_1 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_rgb), params)
+        future_2 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_hb), params)
 
     rgb_dataframe = future_1.result()
     hb_dataframe = future_2.result()
 
     print('Calculations finished \n')
+    t1 = time.time()
+    total = t1-t0
+    print('Time of calculations was '+str(round(total, 2))+' s \n')
 
     # calculate probability under prior of each evolutionary stage
     rgb_prob = rgb_dataframe['posterior_weight'].sum(
