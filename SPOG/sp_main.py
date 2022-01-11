@@ -169,6 +169,24 @@ weights_of_metallicities = weights_of_metallicities/len(weights_of_metallicities
 
 
 def main():
+
+    # run some checks
+    if 'RGB' not in params['evolutionary_stage_prior'] and 'HB' not in params['evolutionary_stage_prior'] and 'MS' not in params['evolutionary_stage_prior'] and 'PMS' not in params['evolutionary_stage_prior']:
+        print('No valid evolutionary stages applied. Please check the param.yaml file. Allowed are: PMS, MS, RGB, HB')
+        return()
+    if 'V_johnson' not in params['photometric_band_A'] and 'B_johnson' not in params['photometric_band_A'] and 'I_johnson' not in params['photometric_band_A'] and 'J_2mass' not in params['photometric_band_A'] and 'H_2mass' not in params['photometric_band_A'] and 'Ks_2mass' not in params['photometric_band_A'] and 'G_gaia' not in params['photometric_band_A'] and 'G_BP_gaia' not in params['photometric_band_A'] and 'G_RP_gaia' not in params['photometric_band_A']:
+        print('No valid photometric_band_A band applied. Please check the param.yaml file. Allowed are: V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia ')
+        return()
+    if 'V_johnson' not in params['photometric_band_B'] and 'B_johnson' not in params['photometric_band_B'] and 'I_johnson' not in params['photometric_band_B'] and 'J_2mass' not in params['photometric_band_B'] and 'H_2mass' not in params['photometric_band_B'] and 'Ks_2mass' not in params['photometric_band_B'] and 'G_gaia' not in params['photometric_band_B'] and 'G_BP_gaia' not in params['photometric_band_B'] and 'G_RP_gaia' not in params['photometric_band_B']:
+        print('No valid photometric_band_B band applied. Please check the param.yaml file. Allowed are: V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia ')
+        return()
+    if 'default' not in params['parameterization'] and 'default2' not in params['parameterization'] and 'linear' not in params['parameterization'] and 'log' not in params['parameterization']:
+        print('No valid parametrization applied. Please check the param.yaml file. Allowed are: default, default2, log, linear')
+        return()
+    if 'new' not in params['mode'] and 'classic' not in params['mode']:
+        print('No valid mode applied. Please check the param.yaml file. Allowed are: new, classic')
+        return()
+
     metlist_rgb = []
     metlist_hb = []
     metlist_ms = []
