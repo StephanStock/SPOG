@@ -104,35 +104,35 @@ Here you find some information about how the evolutionary models have been prepa
 
 1. A mass loss of $\eta=0.2$ was applied to the RGB models.  
 2. The ages of the ZAHB models for stars experiencing a helium flash were corrected according to the applied mass loss in the RGB.
-3. The evolutionary models have been interpolated to a much finder grid, each in mass and metallicity. For this interpolation the phase value apparent in each evolutionary track has been used. For details see [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). For your information:
+3. The evolutionary models have been interpolated to a much finder grid, each in mass and metallicity. For this interpolation the phase value apparent in each evolutionary track has been used. For details see [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). For your information:\
 
-1 PMS_BEG  Track begins here (Pre main sequence)
-2 PMS_MIN  
-3 PMS_END    PMS is near to end
-4 NEAR_ZAM   This point is very near the ZAMS
-5 MS_BEG     H burning fully active
-6 POINT_B    Almost end of the H burning. Small contraction phase begins here for interm. & massive stars   
-7 POINT_C    Small contraction ends here and star move toward RG
-8 RG_BASE    RG base
-9 RG_BMP1   RGB bump in Low Mass Stars (marked also for other masses)
-10 RG_BMP2   RGB bump end in Low Mass Stars (marked also for other masses)
-11 RG_TIP   Helium Flash or beginning of HELIUM Burning in intermediate and massive stars
-12 Loop_A   Base of Red He burning, before possible loop
-13 Loop_B   Bluest point of the loop (He burning
-14 Loop_C   central He = 0  almost
-15 TPAGB begins or c_burning begins (massive stars, generally if LC > 2.9)
+1 PMS_BEG  Track begins here (Pre main sequence)\
+2 PMS_MIN  \
+3 PMS_END    PMS is near to end\
+4 NEAR_ZAM   This point is very near the ZAMS\
+5 MS_BEG     H burning fully active\
+6 POINT_B    Almost end of the H burning. Small contraction phase begins here for interm. & massive stars \  
+7 POINT_C    Small contraction ends here and star move toward RG\
+8 RG_BASE    RG base\
+9 RG_BMP1   RGB bump in Low Mass Stars (marked also for other masses)\
+10 RG_BMP2   RGB bump end in Low Mass Stars (marked also for other masses)\
+11 RG_TIP   Helium Flash or beginning of HELIUM Burning in intermediate and massive stars\
+12 Loop_A   Base of Red He burning, before possible loop\
+13 Loop_B   Bluest point of the loop (He burning\
+14 Loop_C   central He = 0  almost\
+15 TPAGB begins or c_burning begins (massive stars, generally if LC > 2.9)\
 
 This information is from [here](https://people.sissa.it/~sbressan/CAF09_V1.2S_M36_LT/readme.txt).
 Please note that the ZAHB of stars undergoing a helium flash have a different definition starting from 1 to 5.  
 
-4. Note that the following transformation from Z to Fe/H has been apllied:
+4. Note that the following transformation from Z to Fe/H has been apllied:\
 
-$Z_{Sun}=0.0152$
-$Y_{Sun}=0.2485+1.78*Z_{Sun}$ ;Padova relation
-$X_{Sun}=1.-Y_{Sun}-Z_{Sun}$
-$Y=0.2485+1.78*Z$
-$X=1.-Y-Z$
-$[Fe/H]=LOG10(Xsun/Zsun)+LOG10(Z/X)$
+$Z_{Sun}=0.0152$\
+$Y_{Sun}=0.2485+1.78*Z_{Sun}$ ;Padova relation\
+$X_{Sun}=1.-Y_{Sun}-Z_{Sun}$\
+$Y=0.2485+1.78*Z$\
+$X=1.-Y-Z$\
+$[Fe/H]=LOG10(Xsun/Zsun)+LOG10(Z/X)$\
 
 5. Bolometric corrections were applied so that the evolution models contain absolute magnitudes of different photometric bands. The mass loss along the RGB was taken into account when calculating the absolute brightness in different photometric bands. The bands supported are V, B, I calculated based on [Worthey & Lee (2011)](https://ui.adsabs.harvard.edu/abs/2011ApJS..193....1W/abstract), J, H, Ks based on the 2MASS filters, and G, G_BP, G_RP based on the GAIA DR2 filters. The source for the latter correction is dustyAGB07, available at this [link]{http://stev.oapd.inaf.it/cmd_3.6/photsys.html}.
 
