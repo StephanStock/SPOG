@@ -21,6 +21,8 @@ met_star : [0.05979, 0.01] #[metallicity, uncertainty] in Fe/H [dex]
 
 par_star : [8.2719, 0.02] #[parallax, uncertainty] in [mas]
 
+evolutionary_stage_prior : [RGB, HB] #[Include here a list of evolutionary stages that should be considered, you can mix any combination of subgiant or red-giant phase (RGB), red clump or horizontla branch (HB), main-sequence phase (MS), premain-sequence phase (PMS)]
+
 #Optional Parameters
 
 par_err_dom : True #If the parallax error is assumed to dominate the uncertainty set to TRUE, if False slight BIAS is introduced since magnitude uncertainty is non-linear with respect to ABL

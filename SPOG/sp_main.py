@@ -37,6 +37,7 @@ default_params = {'object_name': '',
                   'color_star': [0.97, 0.14],
                   'met_star': [0, 0.1],
                   'par_star': [2.45, 0.01],
+                  'evolutionary_stage_prior': ['RGB', 'HB'],
                   'par_err_dom': False,
                   'use_extinction': False,
                   'A_lambda': 0,
@@ -166,9 +167,12 @@ weights_of_metallicities = df_all_met_sort.loc[(
 
 weights_of_metallicities = weights_of_metallicities/len(weights_of_metallicities)
 
-if __name__ == '__main__':
+
+def main():
     metlist_rgb = []
     metlist_hb = []
+    metlist_ms = []
+    metlist_pms = []
     t0 = time.time()
     print('loading...')
     for model, weight in zip(metallicities_to_load, weights_of_metallicities):
@@ -183,14 +187,28 @@ if __name__ == '__main__':
             mass_group_hb = hdf.get(model+'/hb')
             mass_group_hb_items = list(mass_group_hb.items())
 
-            metlist_rgb.append(sp_utils.load_models(hdf, mass_group_lowmass_items,
-                                                    model, weight, params, 6., 10.999, 'lowmass'))
-            metlist_rgb.append(sp_utils.load_models(hdf, mass_group_highmass_items,
-                                                    model, weight, params, 6., 10.999, 'highmass'))
-            metlist_hb.append(sp_utils.load_models(hdf, mass_group_hb_items,
-                                                   model, weight, params, 1., 5., 'hb'))
-            metlist_hb.append(sp_utils.load_models(hdf, mass_group_highmass_items,
-                                                   model, weight, params, 11., 14.999, 'highmass'))
+            #mass_group_ms = hdf.get(model+'/ms')
+            #mass_group_ms_items = list(mass_group_ms.items())
+
+            #mass_group_pms = hdf.get(model+'/pms')
+            #mass_group_pms_items = list(mass_group_pms.items())
+
+            if 'RGB' in params['evolutionary_stage_prior']:
+                metlist_rgb.append(sp_utils.load_models(hdf, mass_group_lowmass_items,
+                                                        model, weight, params, 6., 10.999, 'lowmass'))
+                metlist_rgb.append(sp_utils.load_models(hdf, mass_group_highmass_items,
+                                                        model, weight, params, 6., 10.999, 'highmass'))
+            if 'HB' in params['evolutionary_stage_prior']:
+                metlist_hb.append(sp_utils.load_models(hdf, mass_group_hb_items,
+                                                       model, weight, params, 1., 5., 'hb'))
+                metlist_hb.append(sp_utils.load_models(hdf, mass_group_highmass_items,
+                                                       model, weight, params, 11., 14.999, 'highmass'))
+            if 'MS' in params['evolutionary_stage_prior']:
+                metlist_ms.append(sp_utils.load_models(hdf, mass_group_ms_items,
+                                                       model, weight, params, 5., 6., 'ms'))
+            if 'PMS' in params['evolutionary_stage_prior']:
+                metlist_pms.append(sp_utils.load_models(hdf, mass_group_pms_items,
+                                                        model, weight, params, 1., 5., 'pms'))
 
         print('loaded models of metallicity: '+model)
 
@@ -201,12 +219,32 @@ if __name__ == '__main__':
     print('All necessary models loaded, starting calculations...\n')
 
     t0 = time.time()
-    with ProcessPoolExecutor(2) as executor:
-        future_1 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_rgb), params)
-        future_2 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_hb), params)
 
-    rgb_dataframe = future_1.result()
-    hb_dataframe = future_2.result()
+    with ProcessPoolExecutor(4) as executor:
+        if 'RGB' in params['evolutionary_stage_prior'] and len(metlist_rgb) > 0:
+            future_1 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_rgb), params)
+        if 'HB' in params['evolutionary_stage_prior'] and len(metlist_hb) > 0:
+            future_2 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_hb), params)
+        if 'MS' in params['evolutionary_stage_prior'] and len(metlist_ms) > 0:
+            future_3 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_ms), params)
+        if 'PMS' in params['evolutionary_stage_prior'] and len(metlist_pms) > 0:
+            future_4 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_pms), params)
+    if 'RGB' in params['evolutionary_stage_prior'] and len(metlist_rgb) > 0:
+        rgb_dataframe = future_1.result()
+    else:
+        rgb_dataframe = pd.DataFrame(columns=['posterior_weight'], dtype=object)
+    if 'HB' in params['evolutionary_stage_prior'] and len(metlist_hb) > 0:
+        hb_dataframe = future_2.result()
+    else:
+        hb_dataframe = pd.DataFrame(columns=['posterior_weight'], dtype=object)
+    if 'MS' in params['evolutionary_stage_prior'] and len(metlist_ms) > 0:
+        ms_dataframe = future_3.result()
+    else:
+        ms_dataframe = pd.DataFrame(columns=['posterior_weight'], dtype=object)
+    if 'PMS' in params['evolutionary_stage_prior'] and len(metlist_pms) > 0:
+        pms_dataframe = future_4.result()
+    else:
+        pms_dataframe = pd.DataFrame(columns=['posterior_weight'], dtype=object)
 
     print('Calculations finished \n')
     t1 = time.time()
@@ -214,15 +252,24 @@ if __name__ == '__main__':
     print('Time of calculations was '+str(round(total, 2))+' s \n')
 
     # calculate probability under prior of each evolutionary stage
-    rgb_prob = rgb_dataframe['posterior_weight'].sum(
-    )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
-    hb_prob = hb_dataframe['posterior_weight'].sum(
-    )/(rgb_dataframe['posterior_weight'].sum()+hb_dataframe['posterior_weight'].sum())
+    rgb_prob = rgb_dataframe['posterior_weight'].sum()/(rgb_dataframe['posterior_weight'].sum(
+    )+hb_dataframe['posterior_weight'].sum()+ms_dataframe['posterior_weight'].sum()+pms_dataframe['posterior_weight'].sum())
+    hb_prob = hb_dataframe['posterior_weight'].sum()/(rgb_dataframe['posterior_weight'].sum(
+    )+hb_dataframe['posterior_weight'].sum()+ms_dataframe['posterior_weight'].sum()+pms_dataframe['posterior_weight'].sum())
+    ms_prob = ms_dataframe['posterior_weight'].sum()/(rgb_dataframe['posterior_weight'].sum(
+    )+hb_dataframe['posterior_weight'].sum()+ms_dataframe['posterior_weight'].sum()+pms_dataframe['posterior_weight'].sum())
+    pms_prob = pms_dataframe['posterior_weight'].sum()/(rgb_dataframe['posterior_weight'].sum(
+    )+hb_dataframe['posterior_weight'].sum()+ms_dataframe['posterior_weight'].sum()+pms_dataframe['posterior_weight'].sum())
 
     if hb_prob < 0.005:
         print('Warning: Horizontal branch solution below 0.5% probability. No output will be created for this solution type!')
     if rgb_prob < 0.005:
         print('Warning: Red giant brach solution below 0.5% probability. No output will be created for this solution type!')
+    if ms_prob < 0.005:
+        print('Warning: Main Sequence solution below 0.5% probability. No output will be created for this solution type!')
+    if pms_prob < 0.005:
+        print('Warning: Pre-main sequence solution below 0.5% probability. No output will be created for this solution type!')
+
     if params['plot_corner'] == True:
         print('Creating cornerplot...\n')
 
@@ -230,6 +277,10 @@ if __name__ == '__main__':
             sp_plots.plot_cornerplot(rgb_dataframe, params, '_RGB')
         if len(hb_dataframe.index) > 0 and hb_prob > 0.005:
             sp_plots.plot_cornerplot(hb_dataframe, params, '_HB')
+        if len(ms_dataframe.index) > 0 and ms_prob > 0.005:
+            sp_plots.plot_cornerplot(ms_dataframe, params, '_MS')
+        if len(pms_dataframe.index) > 0 and pms_prob > 0.005:
+            sp_plots.plot_cornerplot(pms_dataframe, params, '_PMS')
 
         print('Cornerplots saved under path: '+str(params['save_path'])+'\n')
 
@@ -239,6 +290,10 @@ if __name__ == '__main__':
             sp_plots.plot_posterior(rgb_dataframe, params, '_RGB')
         if len(hb_dataframe.index) > 0 and hb_prob > 0.005:
             sp_plots.plot_posterior(hb_dataframe, params, '_HB')
+        if len(ms_dataframe.index) > 0 and ms_prob > 0.005:
+            sp_plots.plot_posterior(ms_dataframe, params, '_MS')
+        if len(pms_dataframe.index) > 0 and pms_prob > 0.005:
+            sp_plots.plot_posterior(pms_dataframe, params, '_PMS')
         print('Posterior plots saved under path: '+str(params['save_path'])+'\n')
 
     if params['return_ascii'] == True:
@@ -248,6 +303,10 @@ if __name__ == '__main__':
             sp_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
         if len(hb_dataframe.index) > 0 and hb_prob > 0.005:
             sp_utils.write_outputfile(hb_dataframe, params, '_HB', hb_prob)
+        if len(ms_dataframe.index) > 0 and ms_prob > 0.005:
+            sp_utils.write_outputfile(ms_dataframe, params, '_MS', ms_prob)
+        if len(pms_dataframe.index) > 0 and pms_prob > 0.005:
+            sp_utils.write_outputfile(pms_dataframe, params, '_PMS', pms_prob)
 
     if params['save_posterior'] == True:
         print('Saving posterior samples in hdf5 file ' +
@@ -256,4 +315,12 @@ if __name__ == '__main__':
                              '_posteriors.h5', key='RGB', mode='w')
         hb_dataframe.to_hdf(params['save_path']+params['object_name'] +
                             '_posteriors.h5', key='HB')
+        ms_dataframe.to_hdf(params['save_path']+params['object_name'] +
+                            '_posteriors.h5', key='MS', mode='w')
+        pms_dataframe.to_hdf(params['save_path']+params['object_name'] +
+                             '_posteriors.h5', key='PMS')
+
+
+if __name__ == '__main__':
+    main()
 print('END')
