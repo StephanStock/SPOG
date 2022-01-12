@@ -238,6 +238,8 @@ def main():
 
     t0 = time.time()
 
+    frames = []
+
     with ProcessPoolExecutor(4) as executor:
         if 'RGB' in params['evolutionary_stage_prior'] and len(metlist_rgb) > 0:
             future_1 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_rgb), params)
@@ -247,22 +249,29 @@ def main():
             future_3 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_ms), params)
         if 'PMS' in params['evolutionary_stage_prior'] and len(metlist_pms) > 0:
             future_4 = executor.submit(sp_calc.calc_prob, pd.concat(metlist_pms), params)
+
     if 'RGB' in params['evolutionary_stage_prior'] and len(metlist_rgb) > 0:
         rgb_dataframe = future_1.result()
+        frames.append(rgb_dataframe)
     else:
         rgb_dataframe = pd.DataFrame(columns=['posterior_weight'], dtype=object)
     if 'HB' in params['evolutionary_stage_prior'] and len(metlist_hb) > 0:
         hb_dataframe = future_2.result()
+        frames.append(hb_dataframe)
     else:
         hb_dataframe = pd.DataFrame(columns=['posterior_weight'], dtype=object)
     if 'MS' in params['evolutionary_stage_prior'] and len(metlist_ms) > 0:
         ms_dataframe = future_3.result()
+        frames.append(ms_dataframe)
     else:
         ms_dataframe = pd.DataFrame(columns=['posterior_weight'], dtype=object)
     if 'PMS' in params['evolutionary_stage_prior'] and len(metlist_pms) > 0:
         pms_dataframe = future_4.result()
+        frames.append(pms_dataframe)
     else:
         pms_dataframe = pd.DataFrame(columns=['posterior_weight'], dtype=object)
+
+    all_dataframe = pd.concat(frames)
 
     print('Calculations finished \n')
     t1 = time.time()
@@ -280,13 +289,13 @@ def main():
     )+hb_dataframe['posterior_weight'].sum()+ms_dataframe['posterior_weight'].sum()+pms_dataframe['posterior_weight'].sum())
 
     if hb_prob < 0.005:
-        print('Warning: Horizontal branch solution below 0.5% probability. No output will be created for this solution type!')
+        print('Warning: Horizontal branch solution below 0.5% probability. No extra output will be created for this solution type!')
     if rgb_prob < 0.005:
-        print('Warning: Red giant brach solution below 0.5% probability. No output will be created for this solution type!')
+        print('Warning: Red giant brach solution below 0.5% probability. No extra output will be created for this solution type!')
     if ms_prob < 0.005:
-        print('Warning: Main Sequence solution below 0.5% probability. No output will be created for this solution type!')
+        print('Warning: Main Sequence solution below 0.5% probability. No extra output will be created for this solution type!')
     if pms_prob < 0.005:
-        print('Warning: Pre-main sequence solution below 0.5% probability. No output will be created for this solution type!')
+        print('Warning: Pre-main sequence solution below 0.5% probability. No extra output will be created for this solution type!')
 
     if params['plot_corner'] == True:
         print('Creating cornerplot...\n')
@@ -299,6 +308,8 @@ def main():
             sp_plots.plot_cornerplot(ms_dataframe, params, '_MS')
         if len(pms_dataframe.index) > 0 and pms_prob > 0.005:
             sp_plots.plot_cornerplot(pms_dataframe, params, '_PMS')
+        if len(all_dataframe.index) > 0:
+            sp_plots.plot_cornerplot(all_dataframe, params, '_ALL')
 
         print('Cornerplots saved under path: '+str(params['save_path'])+'\n')
 
@@ -312,6 +323,9 @@ def main():
             sp_plots.plot_posterior(ms_dataframe, params, '_MS')
         if len(pms_dataframe.index) > 0 and pms_prob > 0.005:
             sp_plots.plot_posterior(pms_dataframe, params, '_PMS')
+        if len(all_dataframe.index) > 0:
+            sp_plots.plot_posterior(all_dataframe, params, '_ALL')
+
         print('Posterior plots saved under path: '+str(params['save_path'])+'\n')
 
     if params['return_ascii'] == True:
@@ -325,6 +339,8 @@ def main():
             sp_utils.write_outputfile(ms_dataframe, params, '_MS', ms_prob)
         if len(pms_dataframe.index) > 0 and pms_prob > 0.005:
             sp_utils.write_outputfile(pms_dataframe, params, '_PMS', pms_prob)
+        if len(all_dataframe.index) > 0:
+            sp_utils.write_outputfile(all_dataframe, params, '_ALL', 1.0)
 
     if params['save_posterior'] == True:
         print('Saving posterior samples in hdf5 file ' +
@@ -337,6 +353,8 @@ def main():
                             '_posteriors.h5', key='MS', mode='w')
         pms_dataframe.to_hdf(params['save_path']+params['object_name'] +
                              '_posteriors.h5', key='PMS')
+        all_dataframe.to_hdf(params['save_path']+params['object_name'] +
+                             '_posteriors.h5', key='ALL')
 
 
 if __name__ == '__main__':

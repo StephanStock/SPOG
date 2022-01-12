@@ -12,12 +12,10 @@ __version__ = "1.0"
 __license__ = "MIT"
 
 
-def calc_prob(df_input, params):
-    df = get_mean_track(df_input)
+def calc_prob(df, params):
     df['IMF_weight'] = IMF_prior(df)
     df['posterior_weight'] = np.exp(((params['ABL_star']-df['ABL'])**2/params['ABL_star_err']**2)-((params['color_star'][0]-df['color'])**2/params['color_star'][1]**2)-(
         (params['met_star'][0]-df['[FE/H]'])**2/params['met_star'][1]**2))*df['met_weight']*df['IMF_weight']*df['evol_weight']
-
     return df
 
 # get the mean value of section between evolutionary track points in

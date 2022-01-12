@@ -3,6 +3,7 @@ import pandas as pd
 import h5py
 import corner
 import sp_plots
+import sp_calc
 
 Rsun = 6.957e10
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
@@ -29,7 +30,7 @@ def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
 
         df_load = df.loc[(df['phase'] >= phase_low) & (df['phase'] <= phase_up) & (df['color'] <= params['color_star'][0]+5*params['color_star'][1]) & (df['color'] >=
                                                                                                                                                         params['color_star'][0]-5*params['color_star'][0]) & (df['ABL'] >= params['ABL_star']-5*params['ABL_star_err']) & (df['ABL'] <= params['ABL_star']+5*params['ABL_star_err'])]
-        list.append(df_load)
+        list.append(sp_calc.get_mean_track(df_load))
     return pd.concat(list)
 
 
