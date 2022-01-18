@@ -13,6 +13,21 @@ __license__ = "MIT"
 
 
 def calc_prob(df, params):
+    """Calculates the posterior probability of all individual model datapoints organized in the dataframe.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The dataframe including the relevant evolutionary models for the log-likelihood calculations.
+    params : dictionairy
+        A dictionairy containing information about user requirements.
+
+    Returns
+    -------
+    pd.DataFrame
+        The dataframe including the relevant evolutionary models with their likelihood values given the observed star parameters
+
+    """
     df['IMF_weight'] = IMF_prior(df)
     df['posterior_weight'] = np.exp(((params['ABL_star']-df['ABL'])**2/params['ABL_star_err']**2)-((params['color_star'][0]-df['color'])**2/params['color_star'][1]**2)-(
         (params['met_star'][0]-df['[FE/H]'])**2/params['met_star'][1]**2))*df['met_weight']*df['IMF_weight']*df['evol_weight']
@@ -49,7 +64,7 @@ def get_mean_track(df):
 
 
 def IMF_prior(df):
-    """Calculate the weight of a certain model point based on the initial mass function (IMF) and zero-age main sequence mass.
+    """Calculate the weight of a certain model point based on the initial mass function (IMF) and zero-age main sequence mass of the model.
 
     Parameters
     ----------
@@ -137,6 +152,23 @@ def get_bin(x, xmin, D_i):
 
 
 def spline(x, y):
+    """Calculates a spline interpolation of the x and y values.
+
+    Parameters
+    ----------
+    x : numpy.ndarray
+        An array containing the x-values of the posterior distribution function.
+    y : numpy.ndarray
+        An array containing the y-values of the posterior distribution function.
+
+    Returns
+    -------
+    x_new: numpy.ndarray
+        An array containing the spline interpolated x-values.
+    y_new: numpy.ndarray
+        An array containing the spline interpolated y-values.
+
+    """
     dummy = pd.DataFrame({'x': x})
     dummy2 = dummy+(dummy.diff()[1:].reset_index(drop=True)/2)
     x2 = dummy2[0:len(dummy2)-1].values
@@ -153,6 +185,24 @@ def spline(x, y):
 
 
 def get_mode_uncertainty(x, y):
+    """Calculates the mode and uncertainty of the posterior distribution function as given in Equation 11 & 12 in Stock et al. A&A 616, A33 (2018)
+
+    Parameters
+    ----------
+    x : numpy.ndarray
+        An array containing the x-values of the posterior distribution function.
+    y : numpy.ndarray
+        An array containing the y-values of the posterior distribution function.
+
+    Returns
+    -------
+    mode: float
+        The mode value (maximum) of the posterior distribution function.
+    e_low: float
+        The lower derived uncertainty for the posterior distribution function.
+    e_high: float
+        The upper derived uncertainty for the posterior distribution function.
+    """
     dummy = pd.DataFrame({'x': x, 'y': y})
     mode = dummy['x'][dummy['y'].idxmax()]
     area = idl_tabulate(x, y)
@@ -176,6 +226,23 @@ def get_mode_uncertainty(x, y):
 
 
 def idl_tabulate(x, y, p=5):
+    """Helper function to reproduce IDL's INT_Tabulate for scipy using a five-point Newton-Cotes integration scheme to get the area under a curve.
+
+    Parameters
+    ----------
+    x : numpy.ndarray
+        An array containing the x-values of a curve to be integrated.
+    y : numpy.ndarray
+        An array containing the y-values of a curve to be integrated.
+    p : int
+        Integer giving the number of points for the integration scheme.
+
+    Returns
+    -------
+    float
+        The area under the curved derived through integration.
+
+    """
     area = 0
     for idx in range(0, x.shape[0], p - 1):
         area += newton_cotes_user(x[idx:idx + p], y[idx:idx + p])
@@ -183,6 +250,21 @@ def idl_tabulate(x, y, p=5):
 
 
 def newton_cotes_user(x, y):
+    """Performs newton cotes integration on chunks of datapoints by using SciPy's newton cotes function.
+
+    Parameters
+    ----------
+    x : numpy.ndarray
+        An array containing the x-values of a curve to be integrated.
+    y : numpy.ndarray
+        An array containing the y-values of a curve to be integrated.
+
+    Returns
+    -------
+    float
+        The newton cotes integration value.
+
+    """
     if x.shape[0] < 2:
         return 0
     rn = (x.shape[0] - 1) * (x - x[0]) / (x[-1] - x[0])
@@ -191,6 +273,21 @@ def newton_cotes_user(x, y):
 
 
 def find_neighbours(value, df):
+    """Returns the index in an array which meet the condition that it is close to a certain value.
+
+    Parameters
+    ----------
+    value : float
+        Float that includes the current step for searching the y-values of the posterior distribution for the uncertainty interval.
+    df : pandas.core.series.Series
+        A 1-dimensional array containing y-values of the posterior distribution either before or after the mode value.
+
+    Returns
+    -------
+    list
+        A list of indexes that reach have the desired y-value based on the value input.
+
+    """
     exactmatch = df[df == value]
     if not exactmatch.empty:
         return exactmatch.index

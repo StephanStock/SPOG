@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import h5py
 import corner
+import copy
 import sp_plots
 import sp_calc
 
@@ -12,6 +13,33 @@ __license__ = "MIT"
 
 
 def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
+    """loads the relevant evolutionary models for posterior calculations and performs some necessary pre-calculations.
+
+    Parameters
+    ----------
+    hdf : HDF5 file object
+        The HDF5 File Object necessary to load the correct models.
+    group : list
+        A list of the relevant groups to be loaded for the models.
+    model : string
+        A string containing the information of the current model metallicity.
+    weight : float
+        A float containing the value of the posterior weight for the current model metallicity.
+    params : dictionairy
+        A dictionairy containing information about user requirements.
+    phase_low : float
+        A float containing the lower evolutionary phase value for the models to be loaded.
+    phase_up : float
+        A float containing the upper evolutionary phase value for the models to be loaded.
+    string : string
+        A string containing information about the current evolutionary stage.
+
+    Returns
+    -------
+    list
+        A list containing pandas dataframes with the relevant models for posterior calculations.
+
+    """
     list = []
     for i in range(len(group)):
         dataset = hdf[model+'/'+string+'/'+str(group[i][0])][()]
@@ -34,6 +62,23 @@ def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
 
 
 def write_outputfile(df, params, sol_type, probability):
+    """Short summary.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The solution dataframe with all information about the models, model parameters, and their posterior weights.
+    params : dictionairy
+        A dictionairy containing information about user requirements.
+    sol_type : string
+        A string containing information about which evolutionary stage the solution dataframe corresponds to.
+    probability : float
+        A float providing the probability of the solutions dataframe with respect to the prior evolutionary stages.
+
+    Returns
+    -------
+        None
+    """
     if params['parameterization'] == 'log':
         df['logM'] = np.log10(df['mass_act'])
         df['log_age'] = np.log10(df['age'])
@@ -84,9 +129,10 @@ def write_outputfile(df, params, sol_type, probability):
         result_list = []
         parameters = ['mass_act', 'Radius', 'logg_act', 'log_age', 'L', 'T']
         if params['mode'] == 'classic':
-            result_list = sp_plots.get_global_list_uncertainty()
+            # shallow copy of gloabl result variable
+            result_list = copy.copy(sp_plots.get_global_list_uncertainty())
             result_list.extend([probability])
-            np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
+            np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 37)),
                        header='Mass_neg_[Msun] Mass_mode_[Msun] Mass_pos_[Msun] Radius_neg_[Rsun] Radius_mode_[Rsun] Radius_pos_[Rsun] logg_neg_[cgs] logg_mode_[cgs] logg_pos_[cgs] log_Age_neg_[log_yr] log_Age_mode_[log_yr] log_Age_pos_[log_yr] Luminosity_neg_[Lsun] Luminosity_mode_[Lsun] Luminosity_pos_[Lsun] Temperature_neg_[K] Temperature_mode_[K] Temperature_pos_[K] Probability'+sol_type)
 
         else:

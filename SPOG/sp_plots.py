@@ -19,6 +19,22 @@ global_list_uncertainty = []
 
 
 def plot_cornerplot(df, params, sol_type):
+    """A function to generate cornerplots.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The solution dataframe with all information about the models, model parameters, and their posterior weights.
+    params : dictionairy
+        A dictionairy containing information about user requirements.
+    sol_type : string
+        A string containing information about which evolutionary stage the solution dataframe corresponds to.
+
+    Returns
+    -------
+        None
+
+    """
     # define solar radius (cgs)
 
     if params['parameterization'] == 'log':
@@ -71,6 +87,22 @@ def plot_cornerplot(df, params, sol_type):
 
 
 def plot_posterior(df, params, sol_type):
+    """A function to generate posterior distribution function plots.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The solution dataframe with all information about the models, model parameters, and their posterior weights.
+    params : dictionairy
+        A dictionairy containing information about user requirements.
+    sol_type : string
+        A string containing information about which evolutionary stage the solution dataframe corresponds to.
+
+    Returns
+    -------
+        None
+
+    """
 
     if params['parameterization'] == 'log':
         df['logM'] = np.log10(df['mass_act'])
@@ -276,4 +308,12 @@ def plot_posterior(df, params, sol_type):
 
 
 def get_global_list_uncertainty():
+    """A helper function to globally store the uncertainties and mode values of the 6 relevant stellar parameters in case of the classic mode.
+
+    Returns
+    -------
+    list
+        A list including information about lower and upper uncertainty and the posterior mode for the 6 relevant stellar parameters.
+
+    """
     return global_list_uncertainty
