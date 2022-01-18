@@ -115,7 +115,7 @@ def plot_posterior(df, params, sol_type):
             ax.set_ylim(bottom=0., top=1.04)
             ax.set_xlim(left=dataframe.min(), right=dataframe.max())
 
-        plt.tight_layout()
+        figure.set_tight_layout(True)
         figure.savefig(params['save_path']+params['object_name']+sol_type+'_posterior.pdf')
 
     elif params['parameterization'] == 'linear':
@@ -160,7 +160,7 @@ def plot_posterior(df, params, sol_type):
                          str(format(round(q_50, 2), '.2f'))+'}}}_{{-{'+str(format(round(q_m, 2), '.2f'))+'}}}^{{+{'+str(format(round(q_p, 2), '.2f'))+'}}}$', fontsize=12)
             ax.set_ylim(bottom=0., top=1.04)
             ax.set_xlim(left=dataframe.min(), right=dataframe.max())
-        plt.tight_layout()
+        figure.set_tight_layout(True)
         figure.savefig(params['save_path']+params['object_name']+sol_type+'_posterior.pdf')
 
     elif params['parameterization'] == 'default2':
@@ -210,7 +210,7 @@ def plot_posterior(df, params, sol_type):
             ax.set_ylim(bottom=0., top=1.04)
             ax.set_xlim(left=dataframe.min(), right=dataframe.max())
 
-        plt.tight_layout()
+        figure.set_tight_layout(True)
         figure.savefig(params['save_path']+params['object_name']+sol_type+'_posterior.pdf')
     else:
         df['Radius'] = (10**df['logR'])/Rsun
@@ -270,7 +270,7 @@ def plot_posterior(df, params, sol_type):
                 ax.set_ylim(bottom=0., top=1.04)
                 ax.set_xlim(left=dataframe.min(), right=dataframe.max())
 
-        plt.tight_layout()
+        figure.set_tight_layout(True)
         figure.savefig(params['save_path']+params['object_name']+sol_type+'_posterior.pdf')
     pass
 

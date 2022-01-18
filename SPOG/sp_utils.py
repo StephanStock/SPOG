@@ -22,7 +22,6 @@ def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
             df['color'] = df[params['photometric_band_A']]-df[params['photometric_band_B']]
         else:
             df['color'] = df[params['photometric_band_B']]-df[params['photometric_band_A']]
-
         df['ABL'] = 10**(0.2*df[params['photometric_band_A']])
         df['met_weight'] = weight
         # use only 5 sigma range of color and ABL around star

@@ -6,6 +6,7 @@ import sys
 import yaml
 import h5py
 import time
+from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 
@@ -185,8 +186,8 @@ def main():
     metlist_ms = []
     metlist_pms = []
     t0 = time.time()
-    print('loading...')
-    for model, weight in zip(metallicities_to_load, weights_of_metallicities):
+    print('loading relevant models and calculating posterior')
+    for model, weight in tqdm(zip(metallicities_to_load, weights_of_metallicities), total=len(metallicities_to_load)):
 
         with h5py.File(params['model_path'], 'r') as hdf:
             mass_group_lowmass = hdf.get(model+'/lowmass')
@@ -220,16 +221,6 @@ def main():
             if 'PMS' in params['evolutionary_stage_prior']:
                 metlist_pms.append(sp_utils.load_models(hdf, mass_group_pms_items,
                                                         model, weight, params, 1., 5., 'pms'))
-
-        print('loaded models of metallicity: '+model)
-
-    t1 = time.time()
-    total = t1-t0
-    print('Time to load models was '+str(round(total, 2))+' s \n')
-
-    print('All necessary models loaded, starting calculations...\n')
-
-    t0 = time.time()
 
     frames = []
 
@@ -266,10 +257,9 @@ def main():
 
     all_dataframe = pd.concat(frames)
 
-    print('Calculations finished \n')
     t1 = time.time()
     total = t1-t0
-    print('Time of calculations was '+str(round(total, 2))+' s \n')
+    print('Models loaded and calculations finished in '+str(round(total, 2))+' s \n')
 
     # calculate probability under prior of each evolutionary stage
     rgb_prob = rgb_dataframe['posterior_weight'].sum()/(rgb_dataframe['posterior_weight'].sum(
@@ -322,8 +312,8 @@ def main():
         print('Posterior plots saved under path: '+str(params['save_path'])+'\n')
 
     if params['return_ascii'] == True:
-        print('Saving output file '+params['object_name'] +
-              'RGB.out under '+str(params['save_path'])+'\n')
+        print('Saving parameter output file "'+params['object_name'] +
+              'RGB.out" under path: '+str(params['save_path'])+'\n')
         if len(rgb_dataframe.index) > 0 and rgb_prob > 0.005:
             sp_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
         if len(hb_dataframe.index) > 0 and hb_prob > 0.005:
@@ -336,8 +326,8 @@ def main():
             sp_utils.write_outputfile(all_dataframe, params, '_ALL', 1.0)
 
     if params['save_posterior'] == True:
-        print('Saving posterior samples in hdf5 file ' +
-              params['object_name']+'_posteriors.h5 under path '+str(params['save_path'])+'\n')
+        print('Saving posterior samples in HDF5 file "' +
+              params['object_name']+'_posteriors.h5" under path: '+str(params['save_path'])+'\n')
         rgb_dataframe.to_hdf(params['save_path']+params['object_name'] +
                              '_posteriors.h5', key='RGB', mode='w')
         hb_dataframe.to_hdf(params['save_path']+params['object_name'] +
