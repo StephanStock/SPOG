@@ -138,13 +138,13 @@ Here you find some information about how the evolutionary models have been prepa
 
 6. A cut on the evolutionary models was applied, which is based on the age of the universe. Only models with ages less than 13 Gyr are considered.
 
-7. A cut on the metallicity has been applied, because the bolometric corrections for these low metallicities would have to be extrapolated instead of interpolated, resulting in less reliable behavior of the evolutionary models. The metallicity range of the models available for this routine is from Z=0.0005 to Z=0.06.
+7. The metallicity range of the models available for this routine is from Z=0.0005 to Z=0.06 ([Fe/H] from ~ -1.51 to ~ +0.68).
 
 8. The range of masses for this routine is from about 0.1 M_{Sun} to 12 M_{Sun}. Higher mass models are currently not supported due to a difference of how the phase value is defined for these models compared to models with smaller mass.
 
 
 
-## Citation
+### Citation
 If you are using *SPOG* for your research *please cite our paper* **[Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)** and link this github repository.
 The BibTeX entry is:
 ```
