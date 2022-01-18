@@ -98,7 +98,7 @@ save_posterior: True    #if True saves all posterior results into a single hdf5 
 
 ```
 
-##A short description of applied changes to the evolutionary model by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract)
+###A short description of applied changes to the evolutionary model by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract)
 
 Here you find some information about how the evolutionary models have been prepared and which parameter ranges are included in this routine.
 
