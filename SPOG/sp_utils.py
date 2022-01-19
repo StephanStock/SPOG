@@ -14,6 +14,17 @@ __license__ = "MIT"
 
 
 def download_models(out):
+    """Downloads the required evolutionary model to the user defined path.
+
+    Parameters
+    ----------
+    out : string
+        User defined path were downloaded models will be stored.
+
+    Returns
+    -------
+        None
+    """
     while True:
         check = input(f'Required evolutionary models were not found or do not exist on the disk.\n'
                       f'Do you want to download the models (58GB) to the following path: {out} ?\n'

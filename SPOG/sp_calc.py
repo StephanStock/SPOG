@@ -25,7 +25,7 @@ def calc_prob(df, params):
     Returns
     -------
     pd.DataFrame
-        The dataframe including the relevant evolutionary models with their likelihood values given the observed star parameters
+        The dataframe including the relevant evolutionary models with their likelihood values given the observed star parameters.
 
     """
     df['IMF_weight'] = IMF_prior(df)
@@ -43,12 +43,12 @@ def get_mean_track(df):
     Parameters
     ----------
     df : pd.DataFrame
-        Dataframe consisting of evolutionary track model points
+        Dataframe consisting of evolutionary track model points.
 
     Returns
     -------
     pd.DataFrame
-        Dataframe consisting of evolutionary track sections based on mean values between evolutionary track model points
+        Dataframe consisting of evolutionary track sections based on mean values between evolutionary track model points.
 
     """
     df = df.reset_index(drop=True)
@@ -69,33 +69,33 @@ def IMF_prior(df):
     Parameters
     ----------
     df : pd.DataFrame
-        Dataframe consisting of evolutionary track model points
+        Dataframe consisting of evolutionary track model points.
 
     Returns
     -------
     pd.DataFrame
-         Dataframe with additional weight column based on IMF
+         Dataframe with additional weight column based on IMF.
     """
     return df['mass_ZAMS']**-2.35
 
 
 def opt_bin(df, weight, maxbin):
     """Calculate the optimal number of bins, for a histogram consisting of weighted discrete measurements or model points
-       using the algorithm provided in Hogg (2008) (arkiv:0807.4820v1) .
+       using the algorithm provided in Hogg (2008) (arkiv:0807.4820v1).
 
     Parameters
     ----------
     df : pd.DataFrame
-        Includes the parameter for which the optimal binning is derived
+        Includes the parameter for which the optimal binning is derived.
     weight : pd.DataFrame
         The posterior weights of each posterior sample.
     maxbin : float
-        sets the maximum number of possible bins
+        Sets the maximum number of possible bins.
 
     Returns
     -------
     int
-        An integer providing the optimal binning according to the algorithm
+        An integer providing the optimal binning according to the algorithm.
 
     """
     print('Calculating optimal binning for '+str(df.name))

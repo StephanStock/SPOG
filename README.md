@@ -1,7 +1,14 @@
 # *SPOG* (Stellar Parameters of Giants)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-*SPOG* is a Python script for uncomplicated determination of stellar parameters based on the original unpublished IDL code used and outlined in [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The code uses Bayesian inference and provides publication quality plots, ascii parameter files readable by [*Topcat*](http://www.star.bris.ac.uk/~mbt/topcat/) and complete weighted posterior samples can be saved in the form of HDF5 files for direct analysis on the probability density functions of the derived stellar parameters.
+*SPOG* is a Python script for uncomplicated determination of stellar parameters based on the original unpublished IDL code used and outlined in [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract).
+
+Have you ever wanted to determine the stellar mass for your star using easily accessible observational data? *SPOG* requires only four parameters and their uncertainties to derive the stellar mass, radius, surface gravity, age, effective temperature, luminosity, evolutionary stage, and even the current phase within the evolutionary stage. All that is needed is photometry in two different bands, a distance estimate in terms of trigonometric parallax, and the metallicity of the star.
+
+
+The code uses Bayesian inference and provides publication quality plots, ascii parameter files readable by [*Topcat*](http://www.star.bris.ac.uk/~mbt/topcat/) and complete weighted posterior samples can be saved in the form of HDF5 files for direct analysis on the probability density functions of the derived stellar parameters. The accuracy of the results was scientifically validated in our study ([Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)) for giant stars (red-giant-branch and horizontal-branch stars) by comparing the stellar parameters of a sample of stars derived with our method with the results based on asteroseismic measurements. An independent follow-up study ()[Malla et al. (2020)](https://ui.adsabs.harvard.edu/abs/2020MNRAS.496.5423M/abstract)) confirmed that the results based on the unpublished IDL version of this code have the best agreement with asteroseismic stellar parameters among the sources they compared.
+
+
 
 ## Installation
 

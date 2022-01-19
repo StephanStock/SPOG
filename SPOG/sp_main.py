@@ -71,7 +71,8 @@ def main():
             os.makedirs(os.path.dirname(params['model_path']))
         sp_utils.download_models(params['model_path'])
 
-    if params['mode'] == 'classic':  # if classic mode is used... posterior has to be plotted
+    # if classic mode is used... posterior has to be plotted
+    if params['mode'] == 'classic':
         params['plot_posterior'] = True
         params['parameterization'] = 'default'
         print('Warning: You have chosen the classic mode. This requires to plot the posterior and to use the default parametrization! Setting "plot_posterior": True and "parametrization": default')
