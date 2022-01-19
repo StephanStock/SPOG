@@ -2,7 +2,7 @@ import corner
 import pandas as pd
 import numpy as np
 import astropy.stats
-import sp_calc
+import SPOG.sp_calc as sp_calc
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('PDF')

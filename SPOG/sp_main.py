@@ -14,9 +14,9 @@ __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
 __version__ = "1.0"
 __license__ = "MIT"
 
-import sp_calc
-import sp_utils
-import sp_plots
+import SPOG.sp_calc as sp_calc
+import SPOG.sp_utils as sp_utils
+import SPOG.sp_plots as sp_plots
 
 
 def main():

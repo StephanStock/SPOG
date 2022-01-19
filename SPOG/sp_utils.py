@@ -3,8 +3,8 @@ import pandas as pd
 import h5py
 import corner
 import copy
-import sp_plots
-import sp_calc
+import SPOG.sp_plots as sp_plots
+import SPOG.sp_calc as sp_calc
 
 Rsun = 6.957e10
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"

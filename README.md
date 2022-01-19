@@ -4,10 +4,22 @@
 *SPOG* is a Python script for uncomplicated determination of stellar parameters based on the original unpublished IDL code used and outlined in [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The code uses Bayesian inference and provides publication quality plots, ascii parameter files readable by [*Topcat*](http://www.star.bris.ac.uk/~mbt/topcat/) and complete weighted posterior samples can be saved in the form of HDF5 files for direct analysis on the probability density functions of the derived stellar parameters.
 
 ## Installation
-### From source (Only supported variant currently)
+### From source
 If you want to download the directory to a local path:
 ```bash
 git clone https://github.com/StephanStock/SPOG.git
+cd SPOG
+pip install .
+```
+
+If you have an existing install, and want to ensure package and dependencies are updated use
+```bash
+pip install --upgrade .
+```
+### Uninstall
+Simply run the following command:
+```bash
+pip uninstall SPOG
 ```
 
 ### Requirements
@@ -20,6 +32,7 @@ git clone https://github.com/StephanStock/SPOG.git
 * pandas
 * corner
 * h5py
+* tqdm
 
 
 ### Stellar Evolutionary Tracks
@@ -31,7 +44,7 @@ However, the models require a particular preparation and certain modifications w
 ### Testing the installation
 To test the functionality of *SPOG* after installing the program and the models go to the directory in which sp_main.py has been copied and run:
 ```bash
-python sp_main.py param.yaml
+python SPOG param.yaml
 ```
 Proceed through the program.
 
