@@ -66,9 +66,9 @@ def main():
                   f'Value set to default: {key} = {default_params[key]}\n')
 
     # check if models have been dowloaded, if not download
-    if not os.path.isfile(params['model_path']+'Models.h5'):
-        if not os.path.exists(params['model_path']):
-            os.makedirs(params['model_path'])
+    if not os.path.isfile(params['model_path']):
+        if not os.path.exists(os.path.dirname(params['model_path'])):
+            os.makedirs(os.path.dirname(params['model_path']))
         sp_utils.download_models(params['model_path'])
 
     if params['mode'] == 'classic':  # if classic mode is used... posterior has to be plotted
