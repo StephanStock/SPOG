@@ -45,7 +45,12 @@ pip uninstall SPOG
 ### Stellar Evolutionary Tracks
 The code uses the stellar models based on the PAdova and TRieste Stellar Evolution  Code [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) available under [this link](https://people.sissa.it/~sbressan/parsec.html).
 
-However, the models require a particular preparation and certain modifications which are explained in more detail in Chapter 3 of [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract) or further down in this readme. The prepared models can be downloaded from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/). Currently only sub-giant, red-giant and horizontal branch models are included. New prepared models will be available very soon allowing to also fit the main-sequence and pre-main sequence.
+However, the models require a particular preparation and certain modifications which are explained in more detail in Chapter 3 of [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract) or further down in this readme.
+
+The models can be downloaded by the script itself. If the models and/or path to the models given in the param.yaml file (see below) does not exists, the code can download the models automatically if the user agrees.
+
+
+Alternatively, the prepared models can be downloaded from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/). Currently only sub-giant, red-giant and horizontal branch models are included. New prepared models will be available very soon allowing to also fit the main-sequence and pre-main sequence.
 
 
 ### Testing the installation

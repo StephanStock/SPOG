@@ -18,7 +18,7 @@ setup(
     packages=setuptools.find_packages(),
     install_requires=['astropy', 'numpy', 'matplotlib',
                       'scipy', 'pandas', 'corner', 'h5py',
-                      'pyyaml', 'tqdm'],
+                      'pyyaml', 'tqdm', 'wget'],
     python_requires='>=3.6',
     entry_points={'console_scripts': ['SPOG=SPOG:main']},
 )

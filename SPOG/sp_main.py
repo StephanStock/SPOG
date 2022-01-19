@@ -65,6 +65,12 @@ def main():
             print(f'Parameter {key} is missing in the input file.\n'
                   f'Value set to default: {key} = {default_params[key]}\n')
 
+    # check if models have been dowloaded, if not download
+    if not os.path.isfile(params['model_path']+'Models.h5'):
+        if not os.path.exists(params['model_path']):
+            os.makedirs(params['model_path'])
+        sp_utils.download_models(params['model_path'])
+
     if params['mode'] == 'classic':  # if classic mode is used... posterior has to be plotted
         params['plot_posterior'] = True
         params['parameterization'] = 'default'

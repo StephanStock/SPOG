@@ -3,6 +3,7 @@ import pandas as pd
 import h5py
 import corner
 import copy
+import wget
 import SPOG.sp_plots as sp_plots
 import SPOG.sp_calc as sp_calc
 
@@ -10,6 +11,24 @@ Rsun = 6.957e10
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
 __version__ = "1.0"
 __license__ = "MIT"
+
+
+def download_models(out):
+    while True:
+        check = input(f'Required evolutionary models were not found or do not exist on the disk.\n'
+                      f'Do you want to download the models (58GB) to the following path: {out} ?\n'
+                      f'Type (y)es or (n)o: \n')
+        if check.lower() == 'yes' or check.lower() == 'y':
+            print('Downloading models...')
+            wget.download(
+                "https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/files/?p=%2FModels.h5&dl=1", out=out)
+            print('Download completed!')
+            break
+        elif check.lower() == 'no' or check.lower() == 'n':
+            raise Exception('Sorry, without models this code does not work!')
+        else:
+            print("Sorry, I didn't understand that.")
+            continue
 
 
 def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
