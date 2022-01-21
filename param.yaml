@@ -1,11 +1,11 @@
 # Input file to define the parameters for the script.
 
 #Essential parameters
-object_name : 'Test_1p95msun'  # Name of the object, must be a python string, outputfiles will begin witht this name
+object_name : 'Test_1p95msun_RGB'  # Name of the object, must be a python string, outputfiles will begin witht this name
 
-save_path : '/home/sstock/Seafile/GJ251/stellar_param/' # Path were the results will be saved
+save_path : './output/test/' # Path were the results will be saved
 
-model_path : '/media/sstock/Seagate Expansion Drive/Project_SPOG/Models.h5'  # Path to the hdf5 file of the evolutionary models
+model_path : './models/models_professional.h5'  # Path to the hdf5 file of the evolutionary models
 
 photometric_band_A: 'V_johnson' #photometric band that defines the ordinate, currently supported kewords are V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia
 
@@ -39,7 +39,7 @@ mode: 'new'  # 'new': final parameters and uncertainties are sample quartiles [0
 
 smooth: 1.0 #Default should be 1. Posteriors are smoothed using a gaussian filter. This parameters sets the standard deviation for the Gaussian kernel. In classic mode it may effect the derived posterior modes.
 
-model_sampling: 5           # Default is 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy. Not recommended for final calculations
+model_sampling: 1           # Default is 1, higher integer value to use sparser sampling on the models by using every nth model in terms of metallicity, improving model load times but possibly affecting parameter precision and accuracy. Not recommended for final calculations
 
 plot_corner: True #if True saves a corner plot
 

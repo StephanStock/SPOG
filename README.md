@@ -175,6 +175,7 @@ posterior_plot_kwargs: {} #kwargs to sent to matplotlib.pyplot.plot() to influen
 save_posterior: True    #if True saves all posterior results into a single hdf5 file, use pandas.read_hdf('filename.h5', 'key') where key is RGB or HB to reload the posterior into a Pandas dataframe
 
 ```
+Take note that model_sampling is set to 1 if you want to get the best possible accuracy.
 
 ### A short description of applied changes to the evolutionary model by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract)
 
