@@ -3,14 +3,38 @@ import pandas as pd
 import h5py
 import corner
 import copy
-import wget
 import SPOG.sp_plots as sp_plots
 import SPOG.sp_calc as sp_calc
+
 
 Rsun = 6.957e10
 __author__ = "Stephan Stock @ ZAH, Landessternwarte Heidelberg"
 __version__ = "1.0"
 __license__ = "MIT"
+
+
+def download(url, filename):
+    import requests
+    import functools
+    import pathlib
+    import shutil
+    from tqdm.auto import tqdm
+    r = requests.get(url, stream=True, allow_redirects=True)
+    if r.status_code != 200:
+        r.raise_for_status()  # Will only raise for 4xx codes, so...
+        raise RuntimeError(f"Request to {url} returned status code {r.status_code}")
+    file_size = int(r.headers.get('Content-Length', 0))
+
+    path = pathlib.Path(filename).expanduser().resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    desc = "(Unknown total file size)" if file_size == 0 else ""
+    r.raw.read = functools.partial(r.raw.read, decode_content=True)  # Decompress if needed
+    with tqdm.wrapattr(r.raw, "read", total=file_size, desc=desc) as r_raw:
+        with path.open("wb") as f:
+            shutil.copyfileobj(r_raw, f)
+
+    return path
 
 
 def download_models(out):
@@ -27,19 +51,56 @@ def download_models(out):
     """
     while True:
         check = input(f'Required evolutionary models were not found or do not exist on the disk.\n'
-                      f'Do you want to download the models (58GB) to the following path: {out} ?\n'
+                      f'Do you want to download the models to the following path: {out} ?\n'
                       f'Type (y)es or (n)o: \n')
         if check.lower() == 'yes' or check.lower() == 'y':
-            print('Downloading models...')
-            wget.download(
-                "https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/files/?p=%2FModels.h5&dl=1", out=out)
-            print('Download completed!')
-            break
+            check2 = input(f'Which version of the models do you want to download?\n'
+                           f'(1) Minimal, recommended for testing only (830M) \n'
+                           f'(2) Student, a good compromise between accuracy, model load time and disk space usage (12G) \n'
+                           f'(3) Professional, recommended for scientists who would like to publish their results (X GB) \n'
+                           f'Please type either 1, 2, 3, (c)ancel to abort, or d(etails) get more information about which models to download. \n')
+            if check2.lower() == '1':
+                print('Downloading minimal number of models...')
+                output = out+'/Models_minimal.h5'
+                download(
+                    "https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/files/?p=%2FModels_minimal.h5&dl=1", output)
+                print('Download completed!')
+                break
+            elif check2.lower() == '2':
+                print('Downloading medium number of models...')
+                output = out+'/Models_student.h5'
+                download(
+                    "https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/files/?p=%2FModels_student.h5&dl=1", output)
+                print('Download completed!')
+                break
+            elif check2.lower() == '3':
+                print('Downloading all available models...')
+                output = out+'/Models_professional.h5'
+                download(
+                    "https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/files/?p=%2FModels_professional.h5&dl=1", output)
+                print('Download completed!')
+                break
+            elif check2.lower() == 'd' or check.lower() == 'details':
+                print(f' (1) The minimal version consists of the following metallicities: Z0.0005, Z0.001, Z0.002, Z0.004, Z0.006, Z0.008, Z0.01, Z0.014, Z0.017, Z0.02, Z0.03, Z0.04, Z0.06.')
+                print(f'     The mass grid is 0.05 Msun. \n')
+                print('\n')
+                print(f' (2) The student version consists of 1/5th of the metallicities provided in the professional version. The mass grid is 0.025 Msun.')
+                print(
+                    f'     If the uncertainty of the metallicity of your star is larger than 0.1 in [Fe/H] than this grid might be enough, even as a professional user. \n')
+                print('\n')
+                print(f' (3) The professional version consists of metallicities ranging from Z0.005 to Z0.06 in steps of Z=0.0000125. The mass grid is 0.025 Msun. \n')
+                continue
+            elif check2.lower() == 'c' or check.lower() == 'cancel':
+                raise Exception('Sorry, without models this code does not work!')
+            else:
+                print("Sorry, I didn't understand that.")
+                continue
         elif check.lower() == 'no' or check.lower() == 'n':
             raise Exception('Sorry, without models this code does not work!')
         else:
             print("Sorry, I didn't understand that.")
             continue
+    return(output)
 
 
 def load_models(hdf, group, model, weight, params, phase_low, phase_up, string):
@@ -119,6 +180,9 @@ def write_outputfile(df, params, sol_type, probability):
             result_list.extend(corner.quantile(
                 df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
         result_list.extend([probability])
+        if (10**result_list[1])-(10**result_list[0]) < 0.025 or (10**result_list[2])-(10**result_list[1]) < 0.025:
+            print("WARNING: Uncertainty of mass for "+sol_type +
+                  " solution is smaller than the available mass grid of the models. Uncertainty is probably not reliable.")
         np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
                    header='log_Mass_q16_[log_Msun] log_Mass_q50_[log_Msun] log_Mass_q84_[log_Msun] log_Radius_q16_[log_Rsun] log_Radius_q50_[log_Rsun] log_Radius_q84_[log_Rsun] logg_q16_[cgs] logg_q50_[cgs] logg_q84_[cgs] log_Age_q16_[log_yr] log_Age_q50_[log_yr] log_Age_q84_[log_yr] log_Luminosity_q16_[log_Lsun] log_Luminosity_q50_[log_Lsun] log_Luminosity_q84_[log_Lsun] log_Temperature_q16_[log_K] log_Temperature_q50_[log_K] log_Temperature_q84_[log_K] Probability'+sol_type)
 
@@ -133,6 +197,9 @@ def write_outputfile(df, params, sol_type, probability):
             result_list.extend(corner.quantile(
                 df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
         result_list.extend([probability])
+        if result_list[1]-result_list[0] < 0.025 or result_list[2]-result_list[1] < 0.025:
+            print("WARNING: Uncertainty of mass for "+sol_type +
+                  " solution is smaller than the available mass grid of the models. Uncertainty is probably not reliable.")
         np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
                    header='Mass_q16_[Msun] Mass_q50_[Msun] Mass_q84_[Msun] Radius_q16_[Rsun] Radius_q50_[Rsun] Radius_q84_[Rsun] SurfaceGravity_q16_[cgs] SurfaceGravity_q50_[cgs] SurfaceGravity_q84_[cgs] Age_q16_[yr] Age_q50_[yr] Age_q84_[yr] Luminosity_q16_[Lsun] Luminosity_q50_[Lsun] Luminosity_q84_[Lsun] Temperature_q16_[K] Temperature_q50_[K] Temperature_q84_[K] Probability'+sol_type)
 
@@ -147,6 +214,9 @@ def write_outputfile(df, params, sol_type, probability):
             result_list.extend(corner.quantile(
                 df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
         result_list.extend([probability])
+        if result_list[1]-result_list[0] < 0.025 or result_list[2]-result_list[1] < 0.025:
+            print("WARNING: Uncertainty of mass for "+sol_type +
+                  " solution is smaller than the available mass grid of the models. Uncertainty is probably not reliable.")
         np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 25)),
                    header='Mass_q16_[Msun] Mass_q50_[Msun] Mass_q84_[Msun] Massloss_q16_[Msun] Massloss_q50_[Msun] Massloss_q84_[Msun] Radius_q16_[Rsun] Radius_q50_[Rsun] Radius_q84_[Rsun] logg_q16_[cgs] logg_q50_[cgs] logg_q84_[cgs] log_Age_q16_[log_yr] log_Age_q50_[log_yr] log_Age_q84_[log_yr] Luminosity_q16_[Lsun] Luminosity_q50_[Lsun] Luminosity_q84_[Lsun] Temperature_q16_[K] Temperature_q50_[K] Temperature_q84_[K] Phase_q16 Phase_q50 Phase_q84 Probability'+sol_type)
 
@@ -161,8 +231,12 @@ def write_outputfile(df, params, sol_type, probability):
         if params['mode'] == 'classic':
             # shallow copy of gloabl result variable
             result_list = copy.copy(sp_plots.get_global_list_uncertainty())
+            result_list = result_list[0:18]
             result_list.extend([probability])
-            np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 37)),
+            if result_list[1]-result_list[0] < 0.025 or result_list[2]-result_list[1] < 0.025:
+                print("WARNING: Uncertainty of mass for "+sol_type +
+                      " solution is smaller than the available mass grid of the models. Uncertainty is probably not reliable.")
+            np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
                        header='Mass_neg_[Msun] Mass_mode_[Msun] Mass_pos_[Msun] Radius_neg_[Rsun] Radius_mode_[Rsun] Radius_pos_[Rsun] logg_neg_[cgs] logg_mode_[cgs] logg_pos_[cgs] log_Age_neg_[log_yr] log_Age_mode_[log_yr] log_Age_pos_[log_yr] Luminosity_neg_[Lsun] Luminosity_mode_[Lsun] Luminosity_pos_[Lsun] Temperature_neg_[K] Temperature_mode_[K] Temperature_pos_[K] Probability'+sol_type)
 
         else:
@@ -170,6 +244,9 @@ def write_outputfile(df, params, sol_type, probability):
                 result_list.extend(corner.quantile(
                     df[i], [0.16, 0.5, 0.84], weights=df['posterior_weight']))
             result_list.extend([probability])
+            if result_list[1]-result_list[0] < 0.025 or result_list[2]-result_list[1] < 0.025:
+                print("WARNING: Uncertainty of mass for "+sol_type +
+                      " solution is smaller than the available mass grid of the models. Uncertainty is probably not reliable.")
             np.savetxt(params['save_path']+params['object_name']+sol_type+'.dat', np.array(result_list).reshape((1, 19)),
                        header='Mass_q16_[Msun] Mass_q50_[Msun] Mass_q84_[Msun] Radius_q16_[Rsun] Radius_q50_[Rsun] Radius_q84_[Rsun] logg_q16_[cgs] logg_q50_[cgs] logg_q84_[cgs] log_Age_q16_[log_yr] log_Age_q50_[log_yr] log_Age_q84_[log_yr] Luminosity_q16_[Lsun] Luminosity_q50_[Lsun] Luminosity_q84_[Lsun] Temperature_q16_[K] Temperature_q50_[K] Temperature_q84_[K] Probability'+sol_type)
 

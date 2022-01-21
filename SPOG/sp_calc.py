@@ -218,7 +218,7 @@ def get_mode_uncertainty(x, y):
             e_high = dummy['x'][high[1]]
             break
         if n == 1:
-            print('Warning: Could not derive any uncertainty!')
+            print('WARNING: Could not derive any uncertainty!')
             e_low = -99.
             e_high = -99.
             break

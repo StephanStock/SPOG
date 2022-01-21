@@ -64,23 +64,25 @@ You will be asked to choose between three different versions of the models:
 
 Welcome to SPOG V1.0
 
+Author: Stephan Stock @ ZAH, Landessternwarte Heidelberg
+
 Required evolutionary models were not found or do not exist on the disk.
 Do you want to download the models to the following path: /home/sstock/SPOG_Models_student ?
 Type (y)es or (n)o:
 y
 Which version of the models do you want to download?
 (1) Minimal, recommended for testing only (830M)
-(2) Student, a good compromise between accuracy, model load time and disk space usage (12G)
-(3) Professional, recommended for scientists who would like to publish their results (X GB)
-Please type either 1, 2, 3, to chose, (c)ancel to cancel or d(etails) get more information:
+(2) Student, a good compromise between accuracy, model load time and disk space usage (11.0G)
+(3) Professional, recommended for scientists who would like to publish their results (54.5G)
+Please type either 1, 2, 3, (c)ancel to abort, or d(etails) get more information about which models to download.
 d
  (1) The minimal version consists of the following metallicities: Z0.0005, Z0.001, Z0.002, Z0.004, Z0.006, Z0.008, Z0.01, Z0.014, Z0.017, Z0.02, Z0.03,  Z0.04, Z0.06.
      The mass grid is 0.05 Msun.
 
 
 
- (2) The student version consists of 1/5th of the metallcities provided in the professional version. The mass grid is 0.025 Msun.
-     If the uncertainty of the metallcity of your star is larger than 0.1 in [Fe/H] than this grid might be enough, even as a professional user.
+ (2) The student version consists of 1/5th of the metallicities provided in the professional version. The mass grid is 0.025 Msun.
+     If the uncertainty of the metallicity of your star is larger than 0.1 in [Fe/H] than this grid might be enough, even as a professional user.
 
 
 
@@ -94,11 +96,13 @@ d
  2
  Downloading medium number of models...
   22%|████████████████▍                                                        | 2.44G/11.0G [14:43<28:04, 5.47MB/s]
-  
+
 ```
 
-Alternatively, the prepared models can be downloaded from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/).
+Alternatively, the prepared models can be downloaded manually from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/).
 Without downloading any models this script will not work and raise an exception.
+
+Note: The models are provided in form of an HDF5 file and compressed with gzip. If you want to improve the runtime of SPOG which is I/O limited you could produce an uncompompressed HDF5 File which will be significantly larger but allow faster runtime (about 1.5s per each metallicty steps of the models to be loaded.)
 
 ### Testing the installation
 To test the functionality of *SPOG* after installing the program run:

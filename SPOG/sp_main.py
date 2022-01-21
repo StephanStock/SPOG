@@ -24,6 +24,7 @@ def main():
     print(f' \n'
           f'Welcome to SPOG V{__version__}\n')
     # Input the parameter set in the parameter file - the list of possible
+    print(f'Author: {__author__}\n')
     # arguments is defined in the default_params-dictionairy
     with open(str(sys.argv[1])) as stream:
         try:
@@ -69,13 +70,31 @@ def main():
     if not os.path.isfile(params['model_path']):
         if not os.path.exists(os.path.dirname(params['model_path'])):
             os.makedirs(os.path.dirname(params['model_path']))
-        sp_utils.download_models(params['model_path'])
+        params['model_path'] = sp_utils.download_models(os.path.dirname(params['model_path']))
+
+    # check if output path exists
+    if not os.path.exists(params['save_path']):
+        while True:
+            check = input(f'Output path does not exist yes. Create? \n'
+                          f'Type (y)es or (n)o: \n')
+            if check.lower() == 'yes' or check.lower() == 'y':
+                try:
+                    os.makedirs(params['save_path'], exist_ok=True)
+                    print("Directory created successfully")
+                except OSError as error:
+                    print("Directory can not be created")
+                break
+            elif check.lower() == 'no' or check.lower() == 'n':
+                raise Exception('Sorry, without a path to put the output files I cannot continue!')
+            else:
+                print("Sorry, I didn't understand that.")
+                continue
 
     # if classic mode is used... posterior has to be plotted
     if params['mode'] == 'classic':
         params['plot_posterior'] = True
         params['parameterization'] = 'default'
-        print('Warning: You have chosen the classic mode. This requires to plot the posterior and to use the default parametrization! Setting "plot_posterior": True and "parametrization": default')
+        print('WARNING: You have chosen the classic mode. This requires to plot the posterior and to use the default parametrization! Setting "plot_posterior": True and "parametrization": default')
 
     # calculate ABL from parallax and magnitude (This parametrization is key to be less biased!)
     if params['use_extinction'] == False:
@@ -133,6 +152,24 @@ def main():
     X = 1.-Y-Z
     Fe_mod = np.log10(Xsun/Zsun)+np.log10(Z/X)
 
+    # run some checks
+    if 'RGB' not in params['evolutionary_stage_prior'] and 'HB' not in params['evolutionary_stage_prior'] and 'MS' not in params['evolutionary_stage_prior'] and 'PMS' not in params['evolutionary_stage_prior']:
+        raise Exception(
+            'No valid evolutionary stages applied. Please check the param.yaml file. Allowed are: PMS, MS, RGB, HB')
+    if 'V_johnson' not in params['photometric_band_A'] and 'B_johnson' not in params['photometric_band_A'] and 'I_johnson' not in params['photometric_band_A'] and 'J_2mass' not in params['photometric_band_A'] and 'H_2mass' not in params['photometric_band_A'] and 'Ks_2mass' not in params['photometric_band_A'] and 'G_gaia' not in params['photometric_band_A'] and 'G_BP_gaia' not in params['photometric_band_A'] and 'G_RP_gaia' not in params['photometric_band_A']:
+        raise Exception('No valid photometric_band_A band applied. Please check the param.yaml file. Allowed are: V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia ')
+    if 'V_johnson' not in params['photometric_band_B'] and 'B_johnson' not in params['photometric_band_B'] and 'I_johnson' not in params['photometric_band_B'] and 'J_2mass' not in params['photometric_band_B'] and 'H_2mass' not in params['photometric_band_B'] and 'Ks_2mass' not in params['photometric_band_B'] and 'G_gaia' not in params['photometric_band_B'] and 'G_BP_gaia' not in params['photometric_band_B'] and 'G_RP_gaia' not in params['photometric_band_B']:
+        raise Exception('No valid photometric_band_B band applied. Please check the param.yaml file. Allowed are: V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia ')
+    if 'default' not in params['parameterization'] and 'default2' not in params['parameterization'] and 'linear' not in params['parameterization'] and 'log' not in params['parameterization']:
+        raise Exception(
+            'No valid parametrization applied. Please check the param.yaml file. Allowed are: default, default2, log, linear')
+    if 'new' not in params['mode'] and 'classic' not in params['mode']:
+        raise Exception(
+            'No valid mode applied. Please check the param.yaml file. Allowed are: new, classic')
+    if params['met_star'][0] > np.max(Fe_mod) or params['met_star'][0] < np.min(Fe_mod):
+        raise Exception(
+            'Metallicity of star outside of model grid. No reliable output can be generated. I am sorry.')
+
     # make a pandas data frame and sort ascending by Fe/H
     df_all_met = pd.DataFrame({'folder': metallicities, 'Z': Z, 'Fe/H': Fe_mod})
     df_all_met_sort = df_all_met.sort_values(by=['Fe/H'], ascending=True)
@@ -164,29 +201,16 @@ def main():
     maxfeh = params['met_star'][0]+5*params['met_star'][1]
     minfeh = params['met_star'][0]-5*params['met_star'][1]
 
+    if maxfeh > np.max(Fe_mod) or minfeh < np.min(Fe_mod):
+        print('WARNING: Range of 5-Sigma uncertainty of stellar metallicity ['+str(np.round(minfeh, 2))+','+str(
+            np.round(maxfeh, 2)) + '] exceeds available model grid['+str(np.round(np.min(Fe_mod), 2))+', '+str(np.round(np.max(Fe_mod), 2))+']. Result might not be reliable. ')
+
     metallicities_to_load = df_all_met_sort.loc[(
         df_all_met_sort['Fe/H'] >= minfeh) & (df_all_met_sort['Fe/H'] <= maxfeh)]['folder']
     weights_of_metallicities = df_all_met_sort.loc[(
         df_all_met_sort['Fe/H'] >= minfeh) & (df_all_met_sort['Fe/H'] <= maxfeh)]['weight']
 
     weights_of_metallicities = weights_of_metallicities/len(weights_of_metallicities)
-
-    # run some checks
-    if 'RGB' not in params['evolutionary_stage_prior'] and 'HB' not in params['evolutionary_stage_prior'] and 'MS' not in params['evolutionary_stage_prior'] and 'PMS' not in params['evolutionary_stage_prior']:
-        print('No valid evolutionary stages applied. Please check the param.yaml file. Allowed are: PMS, MS, RGB, HB')
-        return()
-    if 'V_johnson' not in params['photometric_band_A'] and 'B_johnson' not in params['photometric_band_A'] and 'I_johnson' not in params['photometric_band_A'] and 'J_2mass' not in params['photometric_band_A'] and 'H_2mass' not in params['photometric_band_A'] and 'Ks_2mass' not in params['photometric_band_A'] and 'G_gaia' not in params['photometric_band_A'] and 'G_BP_gaia' not in params['photometric_band_A'] and 'G_RP_gaia' not in params['photometric_band_A']:
-        print('No valid photometric_band_A band applied. Please check the param.yaml file. Allowed are: V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia ')
-        return()
-    if 'V_johnson' not in params['photometric_band_B'] and 'B_johnson' not in params['photometric_band_B'] and 'I_johnson' not in params['photometric_band_B'] and 'J_2mass' not in params['photometric_band_B'] and 'H_2mass' not in params['photometric_band_B'] and 'Ks_2mass' not in params['photometric_band_B'] and 'G_gaia' not in params['photometric_band_B'] and 'G_BP_gaia' not in params['photometric_band_B'] and 'G_RP_gaia' not in params['photometric_band_B']:
-        print('No valid photometric_band_B band applied. Please check the param.yaml file. Allowed are: V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia ')
-        return()
-    if 'default' not in params['parameterization'] and 'default2' not in params['parameterization'] and 'linear' not in params['parameterization'] and 'log' not in params['parameterization']:
-        print('No valid parametrization applied. Please check the param.yaml file. Allowed are: default, default2, log, linear')
-        return()
-    if 'new' not in params['mode'] and 'classic' not in params['mode']:
-        print('No valid mode applied. Please check the param.yaml file. Allowed are: new, classic')
-        return()
 
     metlist_rgb = []
     metlist_hb = []
@@ -206,11 +230,11 @@ def main():
             mass_group_hb = hdf.get(model+'/hb')
             mass_group_hb_items = list(mass_group_hb.items())
 
-            #mass_group_ms = hdf.get(model+'/ms')
-            #mass_group_ms_items = list(mass_group_ms.items())
+            mass_group_ms = hdf.get(model+'/ms')
+            mass_group_ms_items = list(mass_group_ms.items())
 
-            #mass_group_pms = hdf.get(model+'/pms')
-            #mass_group_pms_items = list(mass_group_pms.items())
+            mass_group_pms = hdf.get(model+'/pms')
+            mass_group_pms_items = list(mass_group_pms.items())
 
             if 'RGB' in params['evolutionary_stage_prior']:
                 metlist_rgb.append(sp_utils.load_models(hdf, mass_group_lowmass_items,
@@ -279,13 +303,13 @@ def main():
     )+hb_dataframe['posterior_weight'].sum()+ms_dataframe['posterior_weight'].sum()+pms_dataframe['posterior_weight'].sum())
 
     if hb_prob < 0.005:
-        print('Warning: Horizontal branch solution below 0.5% probability. No extra output will be created for this solution type!')
+        print('WARNING: Horizontal branch solution below 0.5% probability. No extra output will be created for this solution type!')
     if rgb_prob < 0.005:
-        print('Warning: Red giant brach solution below 0.5% probability. No extra output will be created for this solution type!')
+        print('WARNING: Red giant brach solution below 0.5% probability. No extra output will be created for this solution type!')
     if ms_prob < 0.005:
-        print('Warning: Main Sequence solution below 0.5% probability. No extra output will be created for this solution type!')
+        print('WARNING: Main Sequence solution below 0.5% probability. No extra output will be created for this solution type!')
     if pms_prob < 0.005:
-        print('Warning: Pre-main sequence solution below 0.5% probability. No extra output will be created for this solution type!')
+        print('WARNING: Pre-main sequence solution below 0.5% probability. No extra output will be created for this solution type!')
 
     if params['plot_corner'] == True:
         print('Creating cornerplot...\n')
@@ -346,7 +370,8 @@ def main():
         all_dataframe.to_hdf(params['save_path']+params['object_name'] +
                              '_posteriors.h5', key='ALL')
 
+    print('END')
+
 
 if __name__ == '__main__':
     main()
-print('END')
