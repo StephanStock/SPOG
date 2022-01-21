@@ -56,8 +56,8 @@ def download_models(out):
         if check.lower() == 'yes' or check.lower() == 'y':
             check2 = input(f'Which version of the models do you want to download?\n'
                            f'(1) Minimal, recommended for testing only (830M) \n'
-                           f'(2) Student, a good compromise between accuracy, model load time and disk space usage (12G) \n'
-                           f'(3) Professional, recommended for scientists who would like to publish their results (X GB) \n'
+                           f'(2) Student, a good compromise between accuracy, model load time and disk space usage (11.0G) \n'
+                           f'(3) Professional, recommended for scientists who would like to publish their results (54.5G) \n'
                            f'Please type either 1, 2, 3, (c)ancel to abort, or d(etails) get more information about which models to download. \n')
             if check2.lower() == '1':
                 print('Downloading minimal number of models...')
