@@ -6,7 +6,7 @@
 Have you ever wanted to determine the stellar mass for your star using easily accessible observational data? *SPOG* requires only four parameters and their uncertainties to derive the stellar mass, radius, surface gravity, age, effective temperature, luminosity, evolutionary stage, and even the current phase within the evolutionary stage. All that is needed is photometry in two different bands, a distance estimate in terms of trigonometric parallax, and the metallicity of the star.
 
 
-The code uses Bayesian inference and provides publication quality plots, ascii parameter files readable by [*Topcat*](http://www.star.bris.ac.uk/~mbt/topcat/) and complete weighted posterior samples can be saved in the form of HDF5 files for direct analysis on the probability density functions of the derived stellar parameters. The accuracy of the results was scientifically validated in our study ([Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)) for giant stars (red-giant-branch and horizontal-branch stars) by comparing the stellar parameters of a sample of stars derived with our method with the results based on asteroseismic measurements. An independent follow-up study ()[Malla et al. (2020)](https://ui.adsabs.harvard.edu/abs/2020MNRAS.496.5423M/abstract)) confirmed that the results based on the unpublished IDL version of this code have the best agreement with asteroseismic stellar parameters among the sources they compared.
+The code uses Bayesian inference and provides publication quality plots, ascii parameter files readable by [*Topcat*](http://www.star.bris.ac.uk/~mbt/topcat/) and complete weighted posterior samples can be saved in the form of HDF5 files for direct analysis on the probability density functions of the derived stellar parameters. The accuracy of the results was scientifically validated in our study ([Stock et al. 2018](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)) for giant stars (red-giant-branch and horizontal-branch stars) by comparing the stellar parameters of a sample of stars derived with our method with the results based on asteroseismic measurements. An independent follow-up study ([Malla et al. 2020](https://ui.adsabs.harvard.edu/abs/2020MNRAS.496.5423M/abstract)) confirmed that the results based on the unpublished IDL version of this code have the best agreement with asteroseismic stellar parameters among the sources they compared.
 
 
 
@@ -47,6 +47,8 @@ pip uninstall SPOG
 * corner
 * h5py
 * tqdm
+* tables
+* requests
 
 
 ### Stellar Evolutionary Tracks
@@ -54,30 +56,69 @@ The code uses the stellar models based on the PAdova and TRieste Stellar Evoluti
 
 However, the models require a particular preparation and certain modifications which are explained in more detail in Chapter 3 of [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract) or further down in this readme.
 
-The models can be downloaded by the script itself. If the models and/or path to the models given in the param.yaml file (see below) does not exists, the code can download the models automatically if the user agrees.
+When SPOG is run for the first time and you have not yet downloaded any models manually, the script can do this for you if you give your permission.For this just provide the path where you want to store the models in the param file below.
+
+You will be asked to choose between three different versions of the models:
+
+```bash
+
+Welcome to SPOG V1.0
+
+Required evolutionary models were not found or do not exist on the disk.
+Do you want to download the models to the following path: /home/sstock/SPOG_Models_student ?
+Type (y)es or (n)o:
+y
+Which version of the models do you want to download?
+(1) Minimal, recommended for testing only (830M)
+(2) Student, a good compromise between accuracy, model load time and disk space usage (12G)
+(3) Professional, recommended for scientists who would like to publish their results (X GB)
+Please type either 1, 2, 3, to chose, (c)ancel to cancel or d(etails) get more information:
+d
+ (1) The minimal version consists of the following metallicities: Z0.0005, Z0.001, Z0.002, Z0.004, Z0.006, Z0.008, Z0.01, Z0.014, Z0.017, Z0.02, Z0.03,  Z0.04, Z0.06.
+     The mass grid is 0.05 Msun.
 
 
-Alternatively, the prepared models can be downloaded from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/). Currently only sub-giant, red-giant and horizontal branch models are included. New prepared models will be available very soon allowing to also fit the main-sequence and pre-main sequence.
 
+ (2) The student version consists of 1/5th of the metallcities provided in the professional version. The mass grid is 0.025 Msun.
+     If the uncertainty of the metallcity of your star is larger than 0.1 in [Fe/H] than this grid might be enough, even as a professional user.
+
+
+
+ (3) The professional version consists of metallicities ranging from Z0.005 to Z0.06 in steps of Z=0.0000125. The mass grid is 0.025 Msun.
+
+ Which version of the models do you want to download?
+ (1) Minimal, recommended for testing only (830M)
+ (2) Student, a good compromise between accuracy, model load time and disk space usage (12G)
+ (3) Professional, recommended for scientists who would like to publish their results (90G)
+ Please type either 1, 2, 3, to chose, (c)ancel to cancel or d(etails) get more information:
+ 2
+ Downloading medium number of models...
+  22%|████████████████▍                                                        | 2.44G/11.0G [14:43<28:04, 5.47MB/s]
+  
+```
+
+Alternatively, the prepared models can be downloaded from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/).
+Without downloading any models this script will not work and raise an exception.
 
 ### Testing the installation
-To test the functionality of *SPOG* after installing the program and the models go to the directory in which sp_main.py has been copied and run:
+To test the functionality of *SPOG* after installing the program run:
+
 ```bash
-python SPOG param.yaml
+SPOG /path/to/param.yaml
 ```
 Proceed through the program.
 
-"param.yaml" is the path to a file in the "yaml"-format that contains the parameters with which the script is to be executed. All possible options are listed and explained in the example file:
+"param.yaml" is a file in the "yaml"-format that contains the parameters with which the script is to be executed. All possible options are listed and explained in the example file:
 
 ```yaml
 # Input file to define the parameters for the script.
 
 #Essential parameters
-object_name : 'Test_1p95msun'  # Name of the object, must be a python string, outputfiles will begin witht this name
+object_name : 'Test_1p95msun_RGB'  # Name of the object, must be a python string, outputfiles will begin witht this name
 
-save_path : '/home/sstock/Seafile/GJ251/stellar_param/' # Path were the results will be saved
+save_path : './output/test/' # Path were the results will be saved
 
-model_path : '/media/sstock/Seagate Expansion Drive/Project_SPOG/Models_uncompressed_BV_new.h5'  # Path to the hdf5 file of the evolutionary models
+model_path : './models/models_professional.h5'  # Path to the hdf5 file of the evolutionary models
 
 photometric_band_A: 'V_johnson' #photometric band that defines the ordinate, currently supported kewords are V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia
 
