@@ -22,7 +22,7 @@ import SPOG.sp_plots as sp_plots
 def main():
 
     print(f' \n'
-          f'Welcome to SPOG V{__version__}\n')
+          f'Welcome to SPOG+ V{__version__}\n')
     # Input the parameter set in the parameter file - the list of possible
     print(f'Author: {__author__}\n')
     # arguments is defined in the default_params-dictionairy

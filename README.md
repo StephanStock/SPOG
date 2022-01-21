@@ -1,10 +1,11 @@
-# *SPOG* (Stellar Parameters of Giants)
+# *SPOG+* (Stellar Parameters of Giants and more)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-*SPOG* is a Python script for uncomplicated determination of stellar parameters based on the original unpublished IDL code used and outlined in [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract).
 
-Have you ever wanted to determine the stellar mass for your star using easily accessible observational data? *SPOG* requires only four parameters and their uncertainties to derive the stellar mass, radius, surface gravity, age, effective temperature, luminosity, evolutionary stage, and even the current phase within the evolutionary stage. All that is needed is photometry in two different bands, a distance estimate in terms of trigonometric parallax, and the metallicity of the star.
+Have you ever wanted to determine the stellar mass for your star using easily accessible observational data?
+*SPOG+* is a Python script for uncomplicated determination of stellar parameters based on the original unpublished IDL code used and outlined in [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). Originally specifically written to determine masses of red-giant branch and horizontal branch stars, the plus version additionally allows fitting of main-sequence and pre-main sequence stars.
 
+*SPOG+* requires only four parameters and their uncertainties to derive the stellar mass, radius, surface gravity, age, effective temperature, luminosity, evolutionary stage, and even the current phase within the evolutionary stage. All that is needed is photometry in two different bands, a distance estimate in terms of trigonometric parallax, and the metallicity of the star.
 
 The code uses Bayesian inference and provides publication quality plots, ascii parameter files readable by [*Topcat*](http://www.star.bris.ac.uk/~mbt/topcat/) and complete weighted posterior samples can be saved in the form of HDF5 files for direct analysis on the probability density functions of the derived stellar parameters. The accuracy of the results was scientifically validated in our study ([Stock et al. 2018](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)) for giant stars (red-giant-branch and horizontal-branch stars) by comparing the stellar parameters of a sample of stars derived with our method with the results based on asteroseismic measurements. An independent follow-up study ([Malla et al. 2020](https://ui.adsabs.harvard.edu/abs/2020MNRAS.496.5423M/abstract)) confirmed that the results based on the unpublished IDL version of this code have the best agreement with asteroseismic stellar parameters among the sources they compared.
 
@@ -37,7 +38,7 @@ pip uninstall SPOG
 ```
 
 ### Requirements
-*SPOG* is written in Python 3 and should run with a standard [Anaconda distribution](https://www.anaconda.com/distribution/). The requirements are:
+*SPOG+* is written in Python 3 and should run with a standard [Anaconda distribution](https://www.anaconda.com/distribution/). The requirements are:
 * astropy
 * numpy
 * matplotlib
@@ -62,7 +63,7 @@ You will be asked to choose between three different versions of the models:
 
 ```bash
 
-Welcome to SPOG V1.0
+Welcome to SPOG+ V1.0
 
 Author: Stephan Stock @ ZAH, Landessternwarte Heidelberg
 
@@ -105,7 +106,7 @@ Without downloading any models this script will not work and raise an exception.
 Note: The models are provided in form of an HDF5 file and compressed with gzip. If you want to improve the runtime of SPOG which is I/O limited you could produce an uncompompressed HDF5 File which will be significantly larger but allow faster runtime (about 1.5s per each metallicty steps of the models to be loaded.)
 
 ### Testing the installation
-To test the functionality of *SPOG* after installing the program run:
+To test the functionality of *SPOG+* after installing the program run:
 
 ```bash
 SPOG /path/to/param.yaml
@@ -222,7 +223,7 @@ Here you find some information about how the evolutionary models have been prepa
 
 
 ### Citation
-If you are using *SPOG* for your research *please cite our paper* **[Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)** and link this github repository.
+If you are using *SPOG+* for your research *please cite our paper* **[Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract)** and link this github repository.
 The BibTeX entry is:
 ```
 @ARTICLE{2018A&A...616A..33S,
@@ -244,4 +245,4 @@ archivePrefix = {arXiv},
 }
 
 ```
-Please make sure to also acknowledge the python packages required for *SPOG* as well as the stellar evolutionary models by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) and the source for the bolometric corrections.
+Please make sure to also acknowledge the python packages required for *SPOG+* as well as the stellar evolutionary models by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) and the source for the bolometric corrections.
