@@ -5,7 +5,7 @@ object_name : 'Test_1p95msun_RGB'  # Name of the object, must be a python string
 
 save_path : './output/test/' # Path were the results will be saved
 
-model_path : './models/models_professional.h5'  # Path to the hdf5 file of the evolutionary models
+model_path : './models/Models_professional.h5'  # Path to the hdf5 file of the evolutionary models
 
 photometric_band_A: 'V_johnson' #photometric band that defines the ordinate, currently supported kewords are V_johnson, B_johnson, I_johnson, J_2mass, H_2mass, Ks_2mass, G_gaia, G_BP_gaia, G_RP_gaia
 
