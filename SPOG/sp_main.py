@@ -305,7 +305,7 @@ def main():
     if hb_prob < 0.005:
         print('WARNING: Horizontal branch solution below 0.5% probability. No extra output will be created for this solution type!')
     if rgb_prob < 0.005:
-        print('WARNING: Red giant brach solution below 0.5% probability. No extra output will be created for this solution type!')
+        print('WARNING: Red giant branch solution below 0.5% probability. No extra output will be created for this solution type!')
     if ms_prob < 0.005:
         print('WARNING: Main Sequence solution below 0.5% probability. No extra output will be created for this solution type!')
     if pms_prob < 0.005:
@@ -343,17 +343,25 @@ def main():
         print('Posterior plots saved under path: '+str(params['save_path'])+'\n')
 
     if params['return_ascii'] == True:
-        print('Saving parameter output file "'+params['object_name'] +
-              'RGB.out" under path: '+str(params['save_path'])+'\n')
         if len(rgb_dataframe.index) > 0 and rgb_prob > 0.005:
+            print('Saving parameter output file "'+params['object_name'] +
+                  '_RGB.out" under path: '+str(params['save_path'])+'\n')
             sp_utils.write_outputfile(rgb_dataframe, params, '_RGB', rgb_prob)
         if len(hb_dataframe.index) > 0 and hb_prob > 0.005:
+            print('Saving parameter output file "'+params['object_name'] +
+                  '_HB.out" under path: '+str(params['save_path'])+'\n')
             sp_utils.write_outputfile(hb_dataframe, params, '_HB', hb_prob)
         if len(ms_dataframe.index) > 0 and ms_prob > 0.005:
+            print('Saving parameter output file "'+params['object_name'] +
+                  '_MS.out" under path: '+str(params['save_path'])+'\n')
             sp_utils.write_outputfile(ms_dataframe, params, '_MS', ms_prob)
         if len(pms_dataframe.index) > 0 and pms_prob > 0.005:
+            print('Saving parameter output file "'+params['object_name'] +
+                  '_PMS.out" under path: '+str(params['save_path'])+'\n')
             sp_utils.write_outputfile(pms_dataframe, params, '_PMS', pms_prob)
         if len(all_dataframe.index) > 0:
+            print('Saving parameter output file "'+params['object_name'] +
+                  '_ALL.out" under path: '+str(params['save_path'])+'\n')
             sp_utils.write_outputfile(all_dataframe, params, '_ALL', 1.0)
 
     if params['save_posterior'] == True:
