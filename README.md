@@ -51,60 +51,6 @@ pip uninstall SPOG
 * tables
 * requests
 
-
-### Stellar Evolutionary Tracks
-The code uses the stellar models based on the PAdova and TRieste Stellar Evolution  Code [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) available under [this link](https://people.sissa.it/~sbressan/parsec.html).
-
-However, the models require a particular preparation and certain modifications which are explained in more detail in Chapter 3 of [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract) or further down in this readme.
-
-When SPOG is run for the first time and you have not yet downloaded any models manually, the script can do this for you if you give your permission.For this just provide the path where you want to store the models in the param file below.
-
-You will be asked to choose between three different versions of the models:
-
-```bash
-
-Welcome to SPOG+ V1.0
-
-Author: Stephan Stock @ ZAH, Landessternwarte Heidelberg
-
-Required evolutionary models were not found or do not exist on the disk.
-Do you want to download the models to the following path: /home/sstock/SPOG_Models_student ?
-Type (y)es or (n)o:
-y
-Which version of the models do you want to download?
-(1) Minimal, recommended for testing only (830M)
-(2) Student, a good compromise between accuracy, model load time and disk space usage (11.0G)
-(3) Professional, recommended for scientists who would like to publish their results (54.5G)
-Please type either 1, 2, 3, (c)ancel to abort, or d(etails) get more information about which models to download.
-d
- (1) The minimal version consists of the following metallicities: Z0.0005, Z0.001, Z0.002, Z0.004, Z0.006, Z0.008, Z0.01, Z0.014, Z0.017, Z0.02, Z0.03,  Z0.04, Z0.06.
-     The mass grid is 0.05 Msun.
-
-
-
- (2) The student version consists of 1/5th of the metallicities provided in the professional version. The mass grid is 0.025 Msun.
-     If the uncertainty of the metallicity of your star is larger than 0.1 in [Fe/H] than this grid might be enough, even as a professional user.
-
-
-
- (3) The professional version consists of metallicities ranging from Z0.005 to Z0.06 in steps of Z=0.0000125. The mass grid is 0.025 Msun.
-
- Which version of the models do you want to download?
- (1) Minimal, recommended for testing only (830M)
- (2) Student, a good compromise between accuracy, model load time and disk space usage (12G)
- (3) Professional, recommended for scientists who would like to publish their results (90G)
- Please type either 1, 2, 3, to chose, (c)ancel to cancel or d(etails) get more information:
- 2
- Downloading medium number of models...
-  22%|████████████████▍                                                        | 2.44G/11.0G [14:43<28:04, 5.47MB/s]
-
-```
-
-Alternatively, the prepared models can be downloaded manually from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/).
-Without downloading any models this script will not work and raise an exception.
-
-Note: The models are provided in form of an HDF5 file and compressed with gzip. If you want to improve the runtime of SPOG which is I/O limited you could produce an uncompompressed HDF5 File which will be significantly larger but allow faster runtime (about 1.5s per each metallicty steps of the models to be loaded.)
-
 ### Testing the installation
 To test the functionality of *SPOG+* after installing the program run:
 
@@ -177,13 +123,68 @@ save_posterior: True    #if True saves all posterior results into a single hdf5 
 ```
 Take note that model_sampling is set to 1 if you want to get the best possible accuracy.
 
-### A short description of applied changes to the evolutionary model by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract)
+### Stellar Evolutionary Tracks
+The code uses the stellar models based on the PAdova and TRieste Stellar Evolution  Code [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) available under [this link](https://people.sissa.it/~sbressan/parsec.html).
+
+However, the models require a particular preparation and certain modifications which are explained in more detail in Chapter 3 of [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract) or further down in this readme.
+
+When SPOG is run for the first time and you have not yet downloaded any models manually, the script can do this for you if you give your permission.For this just provide the path where you want to store the models in the param file below.
+
+You will be asked to choose between three different versions of the models:
+
+```bash
+
+Welcome to SPOG+ V1.0
+
+Author: Stephan Stock @ ZAH, Landessternwarte Heidelberg
+
+Required evolutionary models were not found or do not exist on the disk.
+Do you want to download the models to the following path: /home/sstock/SPOG_Models_student ?
+Type (y)es or (n)o:
+y
+Which version of the models do you want to download?
+(1) Minimal, recommended for testing only (830M)
+(2) Student, a good compromise between accuracy, model load time and disk space usage (11.0G)
+(3) Professional, recommended for scientists who would like to publish their results (54.5G)
+Please type either 1, 2, 3, (c)ancel to abort, or d(etails) get more information about which models to download.
+d
+ (1) The minimal version consists of the following metallicities: Z0.0005, Z0.001, Z0.002, Z0.004, Z0.006, Z0.008, Z0.01, Z0.014, Z0.017, Z0.02, Z0.03,  Z0.04, Z0.06.
+     The mass grid is 0.05 Msun.
+
+
+
+ (2) The student version consists of 1/5th of the metallicities provided in the professional version. The mass grid is 0.025 Msun.
+     If the uncertainty of the metallicity of your star is larger than 0.1 in [Fe/H] than this grid might be enough, even as a professional user.
+
+
+
+ (3) The professional version consists of metallicities ranging from Z0.005 to Z0.06 in steps of Z=0.0000125. The mass grid is 0.025 Msun.
+
+ Which version of the models do you want to download?
+ (1) Minimal, recommended for testing only (830M)
+ (2) Student, a good compromise between accuracy, model load time and disk space usage (12G)
+ (3) Professional, recommended for scientists who would like to publish their results (90G)
+ Please type either 1, 2, 3, to chose, (c)ancel to cancel or d(etails) get more information:
+ 2
+ Downloading medium number of models...
+  22%|████████████████▍                                                        | 2.44G/11.0G [14:43<28:04, 5.47MB/s]
+
+```
+
+Alternatively, the prepared models can be downloaded manually from this [Link](https://heibox.uni-heidelberg.de/d/253b8d99e1324fa2b4f5/).
+Without downloading any models this script will not work and raise an exception.
+
+Note: The models are provided in form of an HDF5 file and compressed with gzip. If you want to improve the runtime of SPOG which is I/O limited you could produce an uncompompressed HDF5 File which will be significantly larger but allow faster runtime (about 1.5s per each metallicty steps of the models to be loaded.)
+
+
+
+### Applied changes to the evolutionary model by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract)
 
 Here you find some information about how the evolutionary models have been prepared and which parameter ranges are included in this routine.
 
 1. A mass loss of $\eta=0.2$ was applied to the RGB models.  
 2. The ages of the ZAHB models for stars experiencing a helium flash were corrected according to the applied mass loss in the RGB.
-3. The evolutionary models have been interpolated to a much finder grid, each in mass and metallicity. For this interpolation the phase value apparent in each evolutionary track has been used. For details see [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The following information is from [here](https://people.sissa.it/~sbressan/CAF09_V1.2S_M36_LT/readme.txt):
+3. The evolutionary models have been interpolated to a much finer grid, each in mass and metallicity. For this interpolation the phase value apparent in each evolutionary track has been used. For details see [Stock et al. (2018)](https://ui.adsabs.harvard.edu/abs/2018A%26A...616A..33S/abstract). The meaning of the phase value is given [here](https://people.sissa.it/~sbressan/CAF09_V1.2S_M36_LT/readme.txt):
 
     1 PMS_BEG  Track begins here (Pre main sequence)\
     2 PMS_MIN  \
@@ -246,4 +247,4 @@ archivePrefix = {arXiv},
 }
 
 ```
-Please make sure to also acknowledge the python packages required for *SPOG+* as well as the stellar evolutionary models by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) and the source for the bolometric corrections.
+Please make sure to also acknowledge the python packages required for *SPOG+* as well as the stellar evolutionary models by [Bressan et al. (2012)](https://ui.adsabs.harvard.edu/abs/2012MNRAS.427..127B/abstract) and the sources for the bolometric corrections given in the chapter before.

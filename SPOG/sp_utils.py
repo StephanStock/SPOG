@@ -14,6 +14,21 @@ __license__ = "MIT"
 
 
 def download(url, filename):
+    """Starts a download using the request package.
+
+    Parameters
+    ----------
+    url : string
+        The url from where the file should be downloaded.
+    filename : string
+        The name the downloaded file should have.
+
+    Returns
+    -------
+    string
+        Returns path to the downloaded file.
+
+    """
     import requests
     import functools
     import pathlib
